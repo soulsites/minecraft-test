@@ -21,10 +21,19 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
 - Verhaelt sich wie ein echter Bogen (halten = ziehen, loslassen = schiessen,
   Kraft skaliert mit Ziehdauer), nicht wie eine Armbrust.
 - Zug-Animation: Bogen-Icon und -Modell wechseln beim Ziehen durch 4 Stufen
-  (Ruhe + 3 Zugstufen), exakt nach dem Schema von Vanillas eigenem
-  `bow.json`/`bow.render_controllers.json` (Attachable + Render Controller,
-  Auswahl per `query.get_animation_frame`) — nur mit blau eingefaerbtem Griff
-  in allen 4 Texturen. Siehe `packs/resource_pack/attachables/sonic_bow.json`.
+  (Ruhe + 3 Zugstufen), nach dem Schema von Vanillas eigenem `bow.json` /
+  `bow.render_controllers.json` (Attachable + Render Controller) — nur mit
+  blau eingefaerbtem Griff in allen 4 Texturen und einer eigenen, robusten
+  Formel fuer den Ladefortschritt (`variable.charge_amount` direkt aus
+  `query.main_hand_item_use_duration` / eigener Ziehdauer in Ticks berechnet,
+  statt sich auf Vanillas `query.get_animation_frame` zu verlassen — die
+  Konstante 24 in `attachables/sonic_bow.json` muss zur `max_draw_duration`
+  in `items/sonic_bow.json` passen, aktuell 1.2 s = 24 Ticks). Auf den 3
+  Zugstufen liegt zusaetzlich ein genockter Pfeil (`sonic_bow_arrow_nock`)
+  ueber dem Bogen. Siehe `packs/resource_pack/attachables/sonic_bow.json`.
+- Touch-Steuerung: `CrosshairGuard` (`src/CrosshairGuard.ts`) setzt das
+  Crosshair-HUD-Element beim Ziehen explizit zurueck auf sichtbar, falls es
+  je unterdrueckt sein sollte.
 - Das Geschoss ist ein sichtbarer Pfeil (Holzschaft, Befiederung, blaue
   Spitze), fliegt schwerelos und komplett gerade (`gravity: 0`, nicht
   schiebbar durch Entities/Kolben) und wird auf dem gesamten Flug von

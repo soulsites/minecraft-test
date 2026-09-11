@@ -20,9 +20,9 @@
           ]
         }
       },
-      "geometry": "array.sonic_bow_geo_frames[query.get_animation_frame]",
+      "geometry": "array.sonic_bow_geo_frames[math.clamp(math.floor(variable.charge_amount * 4.0), 0.0, 3.0)]",
       "materials": [{ "*": "material.default" }],
-      "textures": ["array.sonic_bow_texture_frames[query.get_animation_frame]"]
+      "textures": ["array.sonic_bow_texture_frames[math.clamp(math.floor(variable.charge_amount * 4.0), 0.0, 3.0)]"]
     }
   }
 }

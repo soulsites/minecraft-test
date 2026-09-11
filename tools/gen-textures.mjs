@@ -269,6 +269,29 @@ function arrowProjectile() {
   return c;
 }
 
+/**
+ * A small arrow drawn across the bow's grip, on the same 16x16 canvas and
+ * transform as the bow icon itself - overlaid as a second texture_mesh on
+ * the pulling-stage geometry (see models/entity/sonic_bow.geo.json), so it
+ * lines up with the grip without needing any separate 3D placement math.
+ */
+function bowArrowNock() {
+  const c = new Canvas(16, 16);
+  c.rect(0, 0, 16, 16, CLEAR);
+  for (let i = 0; i < 11; i++) {
+    const x = 2 + i;
+    const y = 13 - i;
+    c.set(x, y, ARROW_SHAFT);
+    c.set(x, y - 1, ARROW_SHAFT_DARK);
+  }
+  c.rect(11, 1, 2, 2, BLUE_TIP);
+  c.set(12, 0, BLUE_TIP_LIGHT);
+  c.set(2, 13, FLETCHING);
+  c.set(1, 14, FLETCHING);
+  c.set(2, 14, FLETCHING);
+  return c;
+}
+
 const OUTPUTS = {
   "packs/resource_pack/textures/items/frost_shard.png": frostShard,
   "packs/resource_pack/textures/items/frost_wand.png": frostWand,
@@ -278,6 +301,7 @@ const OUTPUTS = {
   "packs/resource_pack/textures/items/sonic_bow_pulling_0.png": () => sonicBowPulling(0),
   "packs/resource_pack/textures/items/sonic_bow_pulling_1.png": () => sonicBowPulling(1),
   "packs/resource_pack/textures/items/sonic_bow_pulling_2.png": () => sonicBowPulling(2),
+  "packs/resource_pack/textures/items/sonic_bow_arrow_nock.png": bowArrowNock,
   "packs/resource_pack/textures/items/echo_charge.png": echoCharge,
   "packs/resource_pack/textures/entity/sonic_boom.png": arrowProjectile,
 };

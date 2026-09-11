@@ -20,6 +20,9 @@
     "sonic_bow_pulling_2": {
       "textures": "textures/items/sonic_bow_pulling_2"
     },
+    "sonic_bow_arrow_nock": {
+      "textures": "textures/items/sonic_bow_arrow_nock"
+    },
     "echo_charge": {
       "textures": "textures/items/echo_charge"
     }
