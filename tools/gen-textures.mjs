@@ -96,6 +96,13 @@ const WOOD = [107, 78, 48];
 const SCULK = [47, 88, 96];
 const SCULK_DARK = [26, 50, 58];
 const SCULK_GLOW = [79, 220, 226];
+const BOW_WOOD = [156, 113, 68];
+const BOW_WOOD_DARK = [102, 70, 40];
+const ARROW_SHAFT = [171, 137, 92];
+const ARROW_SHAFT_DARK = [130, 100, 64];
+const FLETCHING = [235, 235, 235];
+const BLUE_TIP = [41, 98, 219];
+const BLUE_TIP_LIGHT = [98, 150, 240];
 const CLEAR = [0, 0, 0, 0];
 
 function frostShard() {
@@ -174,12 +181,10 @@ function frostGolem() {
 }
 
 /**
- * Draws the bow at one of its four pull stages (0 = resting, 3 = fully drawn).
- * The string pulls back and the grip glows brighter the further it is drawn -
- * this is the vanilla bow.json trick: same geometry, one texture per stage,
- * swapped by a render controller keyed on the draw progress.
+ * A plain vanilla-style bow icon: wooden recurve limbs, a taut string, and a
+ * blue-wrapped grip in the middle.
  */
-function sonicBow(stage = 0) {
+function sonicBow() {
   const c = new Canvas(16, 16);
   c.rect(0, 0, 16, 16, CLEAR);
   const arc = [
@@ -187,38 +192,40 @@ function sonicBow(stage = 0) {
     [14, 7], [14, 8], [14, 9], [13, 10], [13, 11], [12, 12], [11, 13],
   ];
   for (const [x, y] of arc) {
-    c.set(x, y, SCULK);
-    c.set(x - 1, y, SCULK_DARK);
+    c.set(x, y, BOW_WOOD);
+    c.set(x - 1, y, BOW_WOOD_DARK);
   }
-  // string: pulls back towards the grip as the stage increases
-  const pull = stage * 1.4;
+  // string, taut from tip to tip
   for (let y = 2; y <= 12; y++) {
-    const x = 10 - Math.round(Math.abs(7 - y) * 0.2) - Math.round(pull * (1 - Math.abs(7 - y) / 6));
-    c.set(x, y, ICE_LIGHT);
+    const x = 10 - Math.round(Math.abs(7 - y) * 0.2);
+    c.set(x, y, [235, 235, 235]);
   }
-  // grip glow brightens with the draw
-  const glow = [
-    Math.min(255, SCULK_GLOW[0] + stage * 20),
-    Math.min(255, SCULK_GLOW[1] + stage * 10),
-    Math.min(255, SCULK_GLOW[2] + stage * 10),
-  ];
-  c.rect(12, 6, 2, 3, glow);
+  // blue leather grip wrap in the middle of the bow
+  c.rect(11, 6, 3, 4, BLUE_TIP);
+  c.set(12, 6, BLUE_TIP_LIGHT);
+  c.set(12, 9, BLUE_TIP_LIGHT);
   return c;
 }
 
+/** A vanilla-style diagonal arrow icon, fletching at the bottom, blue head. */
 function echoCharge() {
   const c = new Canvas(16, 16);
   c.rect(0, 0, 16, 16, CLEAR);
-  for (let y = 0; y < 16; y++) {
-    for (let x = 0; x < 16; x++) {
-      const d = Math.hypot(x - 7.5, y - 7.5);
-      if (d > 5.5) continue;
-      if (d > 4.2) c.set(x, y, SCULK_DARK);
-      else if (d > 2.4) c.set(x, y, SCULK);
-      else c.set(x, y, SCULK_GLOW);
-    }
+  for (let i = 0; i < 11; i++) {
+    const x = 3 + i;
+    const y = 12 - i;
+    c.set(x, y, ARROW_SHAFT);
+    c.set(x, y - 1, ARROW_SHAFT_DARK);
   }
-  c.rect(6, 4, 1, 1, ICE_LIGHT);
+  // arrowhead at the top-right end of the shaft
+  c.rect(12, 1, 2, 2, BLUE_TIP);
+  c.set(13, 0, BLUE_TIP_LIGHT);
+  c.set(11, 3, BLUE_TIP);
+  // fletching at the bottom-left end
+  c.set(2, 13, FLETCHING);
+  c.set(3, 14, FLETCHING);
+  c.set(1, 14, FLETCHING);
+  c.set(2, 12, FLETCHING);
   return c;
 }
 
@@ -235,10 +242,29 @@ function sonicRing() {
   return c;
 }
 
-/** The projectile itself is invisible - the particles carry the visuals. */
-function invisible() {
-  const c = new Canvas(8, 8);
-  c.rect(0, 0, 8, 8, CLEAR);
+/**
+ * Texture for the flying projectile's own 3D model (see
+ * models/entity/sonic_boom.geo.json): a plain wooden shaft, light fletching,
+ * and a blue arrowhead - a vanilla arrow with a blue tip.
+ *
+ * UV layout (32x16, one flat color per box so a filled bounding rect is
+ * enough - no per-face unwrapping needed):
+ *   shaft body: uv (0,0),  bounding box 20x10
+ *   arrowhead:  uv (20,0), bounding box 10x5
+ *   fletching:  uv (0,10), bounding box 8x4
+ */
+function arrowProjectile() {
+  const c = new Canvas(32, 16);
+  c.rect(0, 0, 32, 16, CLEAR);
+  c.rect(0, 0, 20, 10, ARROW_SHAFT);
+  for (let y = 0; y < 10; y++) {
+    for (let x = 0; x < 20; x++) {
+      if (c.noise(x, y, 5) > 0.75) c.set(x, y, ARROW_SHAFT_DARK);
+    }
+  }
+  c.rect(20, 0, 10, 5, BLUE_TIP);
+  c.rect(20, 0, 10, 1, BLUE_TIP_LIGHT);
+  c.rect(0, 10, 8, 4, FLETCHING);
   return c;
 }
 
@@ -247,13 +273,10 @@ const OUTPUTS = {
   "packs/resource_pack/textures/items/frost_wand.png": frostWand,
   "packs/resource_pack/textures/blocks/frost_ore.png": frostOre,
   "packs/resource_pack/textures/entity/frost_golem.png": frostGolem,
-  "packs/resource_pack/textures/items/sonic_bow.png": () => sonicBow(0),
-  "packs/resource_pack/textures/items/sonic_bow_pulling_0.png": () => sonicBow(1),
-  "packs/resource_pack/textures/items/sonic_bow_pulling_1.png": () => sonicBow(2),
-  "packs/resource_pack/textures/items/sonic_bow_pulling_2.png": () => sonicBow(3),
+  "packs/resource_pack/textures/items/sonic_bow.png": sonicBow,
   "packs/resource_pack/textures/items/echo_charge.png": echoCharge,
   "packs/resource_pack/textures/particle/sonic_ring.png": sonicRing,
-  "packs/resource_pack/textures/entity/sonic_boom.png": invisible,
+  "packs/resource_pack/textures/entity/sonic_boom.png": arrowProjectile,
 };
 
 for (const [file, make] of Object.entries(OUTPUTS)) {

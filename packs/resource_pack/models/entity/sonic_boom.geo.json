@@ -4,13 +4,30 @@
     {
       "description": {
         "identifier": "geometry.sonic_boom",
-        "texture_width": 8,
-        "texture_height": 8,
+        "texture_width": 32,
+        "texture_height": 16,
         "visible_bounds_width": 1,
         "visible_bounds_height": 1,
-        "visible_bounds_offset": [0, 0.25, 0]
+        "visible_bounds_offset": [0, 0, 0]
       },
-      "bones": [{ "name": "root", "pivot": [0, 0, 0] }]
+      "bones": [
+        {
+          "name": "shaft",
+          "pivot": [0, 0, 0],
+          "cubes": [
+            { "origin": [-1, -1, -3], "size": [2, 2, 8], "uv": [0, 0] },
+            { "origin": [-1, -1, -6], "size": [2, 2, 3], "uv": [20, 0] }
+          ]
+        },
+        {
+          "name": "fletching",
+          "pivot": [0, 0, 5],
+          "cubes": [
+            { "origin": [-2, -2, 4.9], "size": [4, 4, 0], "uv": [0, 10] },
+            { "origin": [-2, -2, 4.9], "size": [4, 4, 0], "uv": [0, 10], "rotation": [0, 0, 90] }
+          ]
+        }
+      ]
     }
   ]
 }

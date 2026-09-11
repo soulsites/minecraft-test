@@ -11,15 +11,6 @@
     "sonic_bow": {
       "textures": "textures/items/sonic_bow"
     },
-    "sonic_bow_pulling_0": {
-      "textures": "textures/items/sonic_bow_pulling_0"
-    },
-    "sonic_bow_pulling_1": {
-      "textures": "textures/items/sonic_bow_pulling_1"
-    },
-    "sonic_bow_pulling_2": {
-      "textures": "textures/items/sonic_bow_pulling_2"
-    },
     "echo_charge": {
       "textures": "textures/items/echo_charge"
     }
