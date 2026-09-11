@@ -1,0 +1,8 @@
+pack.name=Frost Addon [RP]
+pack.description=Ressourcenpaket: Texturen, Modelle und Namen fuer das Frost Addon.
+
+item.myaddon:frost_wand.name=Froststab
+item.myaddon:frost_shard.name=Frostsplitter
+tile.myaddon:frost_ore.name=Frosterz
+entity.myaddon:frost_golem.name=Frostgolem
+item.spawn_egg.entity.myaddon:frost_golem.name=Frostgolem spawnen

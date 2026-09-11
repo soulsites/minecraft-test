@@ -1,0 +1,8 @@
+{
+  "resource_pack_name": "myaddon",
+  "texture_name": "atlas.items",
+  "texture_data": {
+    "frost_wand": { "textures": "textures/items/frost_wand" },
+    "frost_shard": { "textures": "textures/items/frost_shard" }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "myaddon:frost_golem",
+      "materials": { "default": "entity_alphatest" },
+      "textures": { "default": "textures/entity/frost_golem" },
+      "geometry": { "default": "geometry.frost_golem" },
+      "render_controllers": ["controller.render.frost_golem"],
+      "animations": {
+        "walk": "animation.frost_golem.walk",
+        "look_at_target": "animation.frost_golem.look_at_target"
+      },
+      "scripts": {
+        "animate": [
+          { "walk": "query.modified_move_speed > 0.05" },
+          "look_at_target"
+        ]
+      },
+      "spawn_egg": { "base_color": "#B9E6F2", "overlay_color": "#2E6B8A" }
+    }
+  }
+}

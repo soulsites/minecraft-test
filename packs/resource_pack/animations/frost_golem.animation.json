@@ -1,0 +1,22 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.frost_golem.walk": {
+      "loop": true,
+      "bones": {
+        "leftLeg": { "rotation": ["math.cos(query.modified_distance_moved * 38) * 40", 0, 0] },
+        "rightLeg": { "rotation": ["-math.cos(query.modified_distance_moved * 38) * 40", 0, 0] },
+        "leftArm": { "rotation": ["-math.cos(query.modified_distance_moved * 38) * 30", 0, 0] },
+        "rightArm": { "rotation": ["math.cos(query.modified_distance_moved * 38) * 30", 0, 0] }
+      }
+    },
+    "animation.frost_golem.look_at_target": {
+      "loop": true,
+      "bones": {
+        "head": {
+          "rotation": ["query.target_x_rotation", "query.target_y_rotation", 0]
+        }
+      }
+    }
+  }
+}
