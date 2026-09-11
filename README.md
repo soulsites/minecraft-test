@@ -30,13 +30,13 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
   ```
   (`S` = antiker Schrott, `E` = Echosplitter) ergibt 1x `myaddon:warden_ingot`.
   Siehe `packs/behavior_pack/recipes/warden_ingot.json`.
-- **Warden-Hammer**: am Crafting-Tisch, 3x3-Muster:
+- **Hammer** (`myaddon:warden_hammer`): am Crafting-Tisch, 3x3-Muster:
   ```
   . G I
-  I S I
+  I D I
   I S .
   ```
-  (`G` = Goldbarren, `I` = Eisenbarren, `S` = Stock). Siehe
+  (`G` = Goldbarren, `I` = Eisenbarren, `D` = Diamant, `S` = Stock). Siehe
   `packs/behavior_pack/recipes/warden_hammer.json`.
 - **Schallbogen**: Am **Schmiedetisch** (nicht Amboss — der Amboss in Bedrock
   hat eine feste UI fuer Umbenennen/Reparieren/Verzaubern und laesst sich
