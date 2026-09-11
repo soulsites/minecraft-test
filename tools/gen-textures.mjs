@@ -96,14 +96,37 @@ const WOOD = [107, 78, 48];
 const SCULK = [47, 88, 96];
 const SCULK_DARK = [26, 50, 58];
 const SCULK_GLOW = [79, 220, 226];
-const BOW_WOOD = [156, 113, 68];
-const BOW_WOOD_DARK = [102, 70, 40];
 const ARROW_SHAFT = [171, 137, 92];
 const ARROW_SHAFT_DARK = [130, 100, 64];
 const FLETCHING = [235, 235, 235];
-const BLUE_TIP = [41, 98, 219];
-const BLUE_TIP_LIGHT = [98, 150, 240];
+const BLUE_TIP = [60, 116, 209];
+const BLUE_TIP_LIGHT = [127, 168, 239];
 const CLEAR = [0, 0, 0, 0];
+
+/**
+ * Exact pixel data lifted from Mojang's public bedrock-samples resource pack
+ * (textures/items/bow_standby.png and textures/items/arrow.png), as
+ * [x, y, "#rrggbb"] triples. Used so our reskin is pixel-identical to vanilla
+ * except for the explicitly recolored grip / arrowhead tones.
+ */
+const VANILLA_BOW_PIXELS = [[11,1,"#493615"],[12,1,"#493615"],[13,1,"#493615"],[14,1,"#493615"],[8,2,"#493615"],[9,2,"#493615"],[10,2,"#493615"],[11,2,"#896727"],[12,2,"#684e1e"],[13,2,"#684e1e"],[14,2,"#896727"],[15,2,"#281e0b"],[6,3,"#493615"],[7,3,"#493615"],[8,3,"#896727"],[9,3,"#684e1e"],[10,3,"#896727"],[11,3,"#281e0b"],[12,3,"#281e0b"],[13,3,"#281e0b"],[14,3,"#281e0b"],[5,4,"#493615"],[6,4,"#6b6b6b"],[7,4,"#684e1e"],[8,4,"#281e0b"],[9,4,"#281e0b"],[10,4,"#281e0b"],[13,4,"#444444"],[4,5,"#493615"],[5,5,"#6b6b6b"],[6,5,"#969696"],[7,5,"#6b6b6b"],[12,5,"#444444"],[3,6,"#493615"],[4,6,"#6b6b6b"],[5,6,"#969696"],[6,6,"#6b6b6b"],[11,6,"#444444"],[3,7,"#493615"],[4,7,"#684e1e"],[5,7,"#6b6b6b"],[10,7,"#444444"],[2,8,"#493615"],[3,8,"#896727"],[4,8,"#281e0b"],[9,8,"#444444"],[2,9,"#493615"],[3,9,"#684e1e"],[4,9,"#281e0b"],[8,9,"#444444"],[2,10,"#493615"],[3,10,"#896727"],[4,10,"#281e0b"],[7,10,"#444444"],[1,11,"#493615"],[2,11,"#896727"],[3,11,"#281e0b"],[6,11,"#444444"],[1,12,"#493615"],[2,12,"#684e1e"],[3,12,"#281e0b"],[5,12,"#444444"],[1,13,"#493615"],[2,13,"#684e1e"],[3,13,"#281e0b"],[4,13,"#444444"],[1,14,"#493615"],[2,14,"#896727"],[3,14,"#281e0b"],[2,15,"#281e0b"]];
+
+const VANILLA_ARROW_ITEM_PIXELS = [[12,2,"#969696"],[13,2,"#ffffff"],[14,2,"#444444"],[10,3,"#969696"],[11,3,"#d8d8d8"],[12,3,"#d8d8d8"],[13,3,"#969696"],[14,3,"#444444"],[10,4,"#444444"],[11,4,"#896727"],[12,4,"#d8d8d8"],[13,4,"#444444"],[10,5,"#896727"],[11,5,"#281e0b"],[12,5,"#969696"],[13,5,"#444444"],[9,6,"#896727"],[10,6,"#281e0b"],[12,6,"#444444"],[8,7,"#896727"],[9,7,"#281e0b"],[7,8,"#896727"],[8,8,"#281e0b"],[6,9,"#896727"],[7,9,"#281e0b"],[5,10,"#896727"],[6,10,"#281e0b"],[3,11,"#e0e0e0"],[4,11,"#c6c6c6"],[5,11,"#281e0b"],[2,12,"#e0e0e0"],[3,12,"#c6c6c6"],[4,12,"#e0e0e0"],[5,12,"#3f3f3f"],[2,13,"#3f3f3f"],[3,13,"#e0e0e0"],[4,13,"#3f3f3f"],[3,14,"#3f3f3f"]];
+
+function hexToRgb(hex) {
+  const n = Number.parseInt(hex.slice(1), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+/** Plots an exact vanilla pixel grid, remapping only the given hex colors. */
+function plotVanillaSprite(pixels, recolorByHex) {
+  const c = new Canvas(16, 16);
+  c.rect(0, 0, 16, 16, CLEAR);
+  for (const [x, y, hex] of pixels) {
+    c.set(x, y, hexToRgb(recolorByHex[hex] ?? hex));
+  }
+  return c;
+}
 
 function frostShard() {
   const c = new Canvas(16, 16);
@@ -181,52 +204,28 @@ function frostGolem() {
 }
 
 /**
- * A plain vanilla-style bow icon: wooden recurve limbs, a taut string, and a
- * blue-wrapped grip in the middle.
+ * Pixel-identical to vanilla's bow (standby) icon, except the grey leather
+ * grip wrap (#6b6b6b / #969696) is recolored blue. Everything else - wood,
+ * string, outline - is untouched.
  */
 function sonicBow() {
-  const c = new Canvas(16, 16);
-  c.rect(0, 0, 16, 16, CLEAR);
-  const arc = [
-    [11, 1], [12, 2], [13, 3], [13, 4], [14, 5], [14, 6],
-    [14, 7], [14, 8], [14, 9], [13, 10], [13, 11], [12, 12], [11, 13],
-  ];
-  for (const [x, y] of arc) {
-    c.set(x, y, BOW_WOOD);
-    c.set(x - 1, y, BOW_WOOD_DARK);
-  }
-  // string, taut from tip to tip
-  for (let y = 2; y <= 12; y++) {
-    const x = 10 - Math.round(Math.abs(7 - y) * 0.2);
-    c.set(x, y, [235, 235, 235]);
-  }
-  // blue leather grip wrap in the middle of the bow
-  c.rect(11, 6, 3, 4, BLUE_TIP);
-  c.set(12, 6, BLUE_TIP_LIGHT);
-  c.set(12, 9, BLUE_TIP_LIGHT);
-  return c;
+  return plotVanillaSprite(VANILLA_BOW_PIXELS, {
+    "#6b6b6b": "#3c74d1",
+    "#969696": "#7fa8ef",
+  });
 }
 
-/** A vanilla-style diagonal arrow icon, fletching at the bottom, blue head. */
+/**
+ * Pixel-identical to vanilla's arrow item icon, except the silvery arrowhead
+ * (#969696 / #ffffff / #d8d8d8) is recolored blue. Shaft, fletching and dark
+ * outline are untouched.
+ */
 function echoCharge() {
-  const c = new Canvas(16, 16);
-  c.rect(0, 0, 16, 16, CLEAR);
-  for (let i = 0; i < 11; i++) {
-    const x = 3 + i;
-    const y = 12 - i;
-    c.set(x, y, ARROW_SHAFT);
-    c.set(x, y - 1, ARROW_SHAFT_DARK);
-  }
-  // arrowhead at the top-right end of the shaft
-  c.rect(12, 1, 2, 2, BLUE_TIP);
-  c.set(13, 0, BLUE_TIP_LIGHT);
-  c.set(11, 3, BLUE_TIP);
-  // fletching at the bottom-left end
-  c.set(2, 13, FLETCHING);
-  c.set(3, 14, FLETCHING);
-  c.set(1, 14, FLETCHING);
-  c.set(2, 12, FLETCHING);
-  return c;
+  return plotVanillaSprite(VANILLA_ARROW_ITEM_PIXELS, {
+    "#969696": "#3c74d1",
+    "#ffffff": "#bfe0ff",
+    "#d8d8d8": "#7fa8ef",
+  });
 }
 
 /** Soft radial dot used by the sonic particles. */
