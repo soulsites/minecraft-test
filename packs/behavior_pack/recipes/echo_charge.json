@@ -1,0 +1,12 @@
+{
+  "format_version": "1.21.60",
+  "minecraft:recipe_shapeless": {
+    "description": { "identifier": "myaddon:echo_charge" },
+    "tags": ["crafting_table"],
+    "ingredients": [
+      { "item": "minecraft:amethyst_shard" },
+      { "item": "myaddon:frost_shard" }
+    ],
+    "result": { "item": "myaddon:echo_charge", "count": 4 }
+  }
+}

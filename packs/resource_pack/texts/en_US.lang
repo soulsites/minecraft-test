@@ -6,3 +6,6 @@ item.myaddon:frost_shard.name=Frost Shard
 tile.myaddon:frost_ore.name=Frost Ore
 entity.myaddon:frost_golem.name=Frost Golem
 item.spawn_egg.entity.myaddon:frost_golem.name=Spawn Frost Golem
+item.myaddon:sonic_bow.name=Sonic Bow
+item.myaddon:echo_charge.name=Echo Charge
+entity.myaddon:sonic_boom.name=Sonic Boom

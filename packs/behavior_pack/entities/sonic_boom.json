@@ -1,0 +1,53 @@
+{
+  "format_version": "1.21.60",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "myaddon:sonic_boom",
+      "is_spawnable": false,
+      "is_summonable": true,
+      "runtime_identifier": "minecraft:arrow"
+    },
+    "component_groups": {
+      "myaddon:expired": {
+        "minecraft:instant_despawn": {}
+      }
+    },
+    "components": {
+      "minecraft:type_family": { "family": ["sonic_boom", "projectile", "inanimate"] },
+      "minecraft:collision_box": { "width": 0.45, "height": 0.45 },
+      "minecraft:physics": { "has_gravity": false, "has_collision": false },
+      "minecraft:conditional_bandwidth_optimization": {},
+      "minecraft:projectile": {
+        "power": 3.2,
+        "gravity": 0.0,
+        "inertia": 1.0,
+        "liquid_inertia": 1.0,
+        "anchor": 1,
+        "offset": [0, -0.1, 0],
+        "uncertainty_base": 0,
+        "uncertainty_multiplier": 0,
+        "should_bounce": false,
+        "reflect_on_hurt": false,
+        "hit_sound": "warden.sonic_boom",
+        "shoot_sound": "warden.sonic_charge",
+        "shoot_target": false,
+        "on_hit": {
+          "impact_damage": {
+            "damage": 0,
+            "knockback": false,
+            "destroy_on_hit": false,
+            "catch_fire": false
+          }
+        }
+      },
+      "minecraft:timer": {
+        "looping": false,
+        "time": 3.0,
+        "time_down_event": { "event": "myaddon:expire" }
+      }
+    },
+    "events": {
+      "myaddon:expire": { "add": { "component_groups": ["myaddon:expired"] } }
+    }
+  }
+}

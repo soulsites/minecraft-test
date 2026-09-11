@@ -11,6 +11,23 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
 | Item   | `myaddon:frost_shard`  | Craftingmaterial, Drop von Erz und Golem |
 | Block  | `myaddon:frost_ore`    | Erz mit eigener Loot Table, leichtem Leuchten und Skript-Effekt beim Abbau |
 | Entity | `myaddon:frost_golem`  | Feindlicher Mob mit eigenem Modell, Spawn-Regeln in kalten Biomen und Enrage-Phase unter 50 % Leben |
+| Item   | `myaddon:sonic_bow`    | Schallbogen: verschiesst statt Pfeilen den Sonic Boom des Wardens |
+| Item   | `myaddon:echo_charge`  | Munition des Schallbogens |
+| Entity | `myaddon:sonic_boom`   | Unsichtbares Projektil, dessen Optik komplett aus eigenen Partikeln besteht |
+
+### Schallbogen im Detail
+
+- Munition ist `myaddon:echo_charge` (Amethystsplitter + Frostsplitter ergibt 4 Stueck).
+- Das Projektil fliegt schwerelos und geradeaus, gezogen wird wie bei einem Bogen
+  (`minecraft:shooter` mit `scale_power_by_draw_duration`).
+- Treffer verursachen Schaden mit der Ursache `sonicBoom` — der ignoriert Ruestung
+  und Schild, genau wie beim Warden.
+- Ein Schuss durchschlaegt bis zu 4 Gegner und detoniert danach bzw. beim
+  Blocktreffer zu einer Druckwelle mit Flaechenschaden und Knockback.
+- Optik: eigene Partikel `myaddon:sonic_ring` (Flugbahn) und `myaddon:sonic_impact`
+  (Einschlag), Sounds `warden.sonic_charge` / `warden.sonic_boom`.
+- Alle Werte (Schaden, Radius, Knockback, Durchschlag) stehen in
+  `SonicBowConfig` in `src/config.ts`.
 
 ## Projektstruktur
 
@@ -50,6 +67,8 @@ mcpelauncher). Alternativ den Pfad per Umgebungsvariable `COM_MOJANG` setzen.
    /give @s myaddon:frost_wand
    /setblock ~ ~ ~1 myaddon:frost_ore
    /summon myaddon:frost_golem
+   /give @s myaddon:sonic_bow
+   /give @s myaddon:echo_charge 16
    ```
 
 ## Erweitern

@@ -93,6 +93,9 @@ const ICE_DARK = [88, 148, 184];
 const STONE = [128, 128, 128];
 const STONE_DARK = [104, 104, 104];
 const WOOD = [107, 78, 48];
+const SCULK = [47, 88, 96];
+const SCULK_DARK = [26, 50, 58];
+const SCULK_GLOW = [79, 220, 226];
 const CLEAR = [0, 0, 0, 0];
 
 function frostShard() {
@@ -170,11 +173,70 @@ function frostGolem() {
   return c;
 }
 
+function sonicBow() {
+  const c = new Canvas(16, 16);
+  c.rect(0, 0, 16, 16, CLEAR);
+  // bow limbs: a simple arc drawn as short segments
+  const arc = [
+    [11, 1], [12, 2], [13, 3], [13, 4], [14, 5], [14, 6],
+    [14, 7], [14, 8], [14, 9], [13, 10], [13, 11], [12, 12], [11, 13],
+  ];
+  for (const [x, y] of arc) {
+    c.set(x, y, SCULK);
+    c.set(x - 1, y, SCULK_DARK);
+  }
+  // string
+  for (let y = 2; y <= 12; y++) c.set(10 - Math.round(Math.abs(7 - y) * 0.2), y, ICE_LIGHT);
+  // sculk core glow in the grip
+  c.rect(12, 6, 2, 3, SCULK_GLOW);
+  return c;
+}
+
+function echoCharge() {
+  const c = new Canvas(16, 16);
+  c.rect(0, 0, 16, 16, CLEAR);
+  for (let y = 0; y < 16; y++) {
+    for (let x = 0; x < 16; x++) {
+      const d = Math.hypot(x - 7.5, y - 7.5);
+      if (d > 5.5) continue;
+      if (d > 4.2) c.set(x, y, SCULK_DARK);
+      else if (d > 2.4) c.set(x, y, SCULK);
+      else c.set(x, y, SCULK_GLOW);
+    }
+  }
+  c.rect(6, 4, 1, 1, ICE_LIGHT);
+  return c;
+}
+
+/** Soft radial dot used by the sonic particles. */
+function sonicRing() {
+  const c = new Canvas(16, 16);
+  for (let y = 0; y < 16; y++) {
+    for (let x = 0; x < 16; x++) {
+      const d = Math.hypot(x - 7.5, y - 7.5) / 7.5;
+      const alpha = Math.round(Math.max(0, 1 - d * d) * 255);
+      c.set(x, y, [255, 255, 255, alpha]);
+    }
+  }
+  return c;
+}
+
+/** The projectile itself is invisible - the particles carry the visuals. */
+function invisible() {
+  const c = new Canvas(8, 8);
+  c.rect(0, 0, 8, 8, CLEAR);
+  return c;
+}
+
 const OUTPUTS = {
   "packs/resource_pack/textures/items/frost_shard.png": frostShard,
   "packs/resource_pack/textures/items/frost_wand.png": frostWand,
   "packs/resource_pack/textures/blocks/frost_ore.png": frostOre,
   "packs/resource_pack/textures/entity/frost_golem.png": frostGolem,
+  "packs/resource_pack/textures/items/sonic_bow.png": sonicBow,
+  "packs/resource_pack/textures/items/echo_charge.png": echoCharge,
+  "packs/resource_pack/textures/particle/sonic_ring.png": sonicRing,
+  "packs/resource_pack/textures/entity/sonic_boom.png": invisible,
 };
 
 for (const [file, make] of Object.entries(OUTPUTS)) {

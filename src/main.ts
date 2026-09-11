@@ -2,6 +2,7 @@ import { system } from "@minecraft/server";
 import { FrostOreComponent } from "./components/FrostOreComponent";
 import { FrostWandComponent } from "./components/FrostWandComponent";
 import { FrostGolemManager } from "./FrostGolemManager";
+import { SonicBoomManager } from "./SonicBoomManager";
 
 /**
  * Entry point of the behavior pack script module.
@@ -9,6 +10,7 @@ import { FrostGolemManager } from "./FrostGolemManager";
  */
 class Addon {
   private readonly golems = new FrostGolemManager();
+  private readonly sonicBooms = new SonicBoomManager();
 
   public start(): void {
     system.beforeEvents.startup.subscribe((event) => {
@@ -23,6 +25,7 @@ class Addon {
     });
 
     this.golems.register();
+    this.sonicBooms.register();
   }
 }
 
