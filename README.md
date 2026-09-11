@@ -20,32 +20,30 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
 - Munition ist `myaddon:echo_charge` (Amethystsplitter + Frostsplitter ergibt 4 Stueck).
 - Verhaelt sich wie ein echter Bogen (halten = ziehen, loslassen = schiessen,
   Kraft skaliert mit Ziehdauer), nicht wie eine Armbrust.
+- Werte (Haltbarkeit 384, Verzauberbarkeit 1, Bewegungsverlangsamung 0.35,
+  unbegrenzte Haltedauer) sind bewusst an den echten Vanilla-Bogen angeglichen
+  — nur Munition (`myaddon:echo_charge` statt `minecraft:arrow`) und Textur
+  (blauer Griff) unterscheiden sich.
 - Zug-Animation: Bogen-Icon und -Modell wechseln beim Ziehen durch 4 Stufen
   (Ruhe + 3 Zugstufen), nach dem Schema von Vanillas eigenem `bow.json` /
   `bow.render_controllers.json` (Attachable + Render Controller). Blau
   eingefaerbter Griff in allen 4 Texturen, genockter Pfeil (`sonic_bow_arrow_nock`)
-  als Overlay auf den 3 Zugstufen. Der Ladefortschritt
-  (`variable.charge_amount`) wird aus `query.main_hand_item_max_duration` und
-  `query.main_hand_item_use_duration` berechnet: Letztere zaehlt laut
-  Script-API-Doku (`ItemStartUseAfterEvent.useDuration`) die **verbleibende**
-  Zeit runter, nicht die verstrichene hoch — `max_duration - use_duration`
-  liefert die tatsaechlich verstrichene Ziehzeit. Eine fruehere Version hatte
-  das genau andersherum, wodurch die Animation rueckwaerts lief und die
-  Ruhephase nie zu sehen war. Siehe
-  `packs/resource_pack/attachables/sonic_bow.json`.
+  als Overlay auf den 3 Zugstufen. Der Ladefortschritt (`variable.charge_amount`)
+  ist jetzt **monoton** (`math.max` mit dem letzten Wert): er kann waehrend des
+  Haltens nur steigen oder gleich bleiben, nie zurueckspringen — das behebt den
+  Bug, bei dem die Animation am Ende der Ziehzeit einfach auf Anfang zurueckgesetzt
+  wurde (die Zieh-„Ladung" laeuft intern offenbar in einem neuen Zyklus weiter,
+  sobald `max_draw_duration` erreicht ist; ohne die Klemme wurde das als Reset
+  sichtbar). Nur `!query.is_using_item` setzt auf 0 zurueck, wenn man loslaesst.
+  Siehe `packs/resource_pack/attachables/sonic_bow.json`.
 - Fadenkreuz: Das native Touch-Ziel-Reticle, das beim Ziehen eines *echten*
   Vanilla-Bogens automatisch erscheint, ist in keiner Resource-Pack-Datei
-  data-getrieben (`hud_screen.json` hat dafuer keinerlei Bindung) — es
-  scheint hart an die Vanilla-Item-ID gekoppelt und ueber ein Custom-Item
-  nicht erzwingbar. Als Ersatz zeigt `AimReticle` (`src/AimReticle.ts`)
-  waehrend des Ziehens ein `+` in der Bildschirmmitte an (ueber
-  `onScreenDisplay.setTitle`, mit `fadeInDuration`/`fadeOutDuration: 0` fuer
-  sofortiges Ein-/Ausblenden bei `itemStartUse`/`itemReleaseUse`/`itemStopUse`)
-  — das ist die einzige Screen-Center-Overlay-Moeglichkeit, die die Script
-  API tatsaechlich bietet; die Position folgt der von Minecraft fuer Titles
-  vorgesehenen Stelle, nicht zwingend dem exakten Pixel-Zentrum. Setzt
-  zusaetzlich weiterhin das Crosshair-HUD-Element zurueck auf sichtbar,
-  falls es je unterdrueckt sein sollte.
+  data-getrieben (`hud_screen.json` hat dafuer keinerlei Bindung) — es scheint
+  hart an die Vanilla-Item-ID gekoppelt zu sein. Der Text-Ersatz (`+` per
+  `setTitle`) wurde auf Wunsch wieder entfernt, da er weder zentriert war noch
+  gut aussah (Titles haben in Bedrock eine feste Textkontur/Umrandung, die sich
+  nicht abschalten laesst). Es gibt aktuell keinen Ersatz dafuer — nach
+  aktuellem Kenntnisstand ist das eine Engine-Grenze fuer Custom-Items.
 - Das Geschoss ist ein sichtbarer Pfeil (Holzschaft, Befiederung, blaue
   Spitze), fliegt schwerelos und komplett gerade (`gravity: 0`, nicht
   schiebbar durch Entities/Kolben) und wird von Wardens echtem

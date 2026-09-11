@@ -23,7 +23,7 @@
       },
       "scripts": {
         "pre_animation": [
-          "variable.charge_amount = math.clamp((query.main_hand_item_max_duration - query.main_hand_item_use_duration) / math.max(query.main_hand_item_max_duration, 0.01), 0.0, 1.0);"
+          "variable.charge_amount = !query.is_using_item ? 0.0 : math.max(variable.charge_amount, math.clamp((query.main_hand_item_max_duration - query.main_hand_item_use_duration) / 24.0, 0.0, 1.0));"
         ],
         "animate": [
           "wield",
