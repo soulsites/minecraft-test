@@ -323,60 +323,34 @@ function wardenIngot() {
   return c;
 }
 
-/** Iron hammer head on a wooden handle. */
 /**
- * Round mace-like head (not a rectangular block) with a golden cross and a
- * blue gem at its center, on a diagonal wooden handle - matches the shape
- * the user sketched by hand.
+ * Every non-transparent pixel as [x, y, r, g, b], read directly off the
+ * user's own shadow-free reference screenshot (sampled at each of the
+ * 16x16 grid's cell centers, exact RGB - no palette substitution) so the
+ * colors match precisely, not just the shape.
  */
-const HAMMER_GREY = [150, 148, 163];
-const HAMMER_WOOD_LIGHT = [150, 113, 101];
-const HAMMER_WOOD_DARK = [110, 88, 83];
+const WARDEN_HAMMER_PIXELS = [
+  [10, 0, 174, 174, 174], [9, 1, 174, 174, 174], [10, 1, 202, 202, 202], [11, 1, 174, 174, 174],
+  [8, 2, 175, 175, 175], [9, 2, 218, 218, 218], [10, 2, 213, 213, 213], [11, 2, 223, 223, 223], [12, 2, 248, 215, 72],
+  [7, 3, 174, 174, 174], [8, 3, 218, 218, 218], [9, 3, 213, 213, 213], [10, 3, 248, 215, 72], [11, 3, 248, 214, 72], [12, 3, 248, 215, 72], [13, 3, 248, 214, 72],
+  [7, 4, 174, 174, 174], [8, 4, 202, 202, 202], [9, 4, 223, 223, 223], [10, 4, 248, 215, 72], [11, 4, 100, 164, 214], [12, 4, 248, 215, 72], [13, 4, 222, 222, 222], [14, 4, 174, 174, 174],
+  [8, 5, 174, 174, 174], [9, 5, 202, 202, 202], [10, 5, 213, 213, 213], [11, 5, 246, 214, 81], [12, 5, 248, 214, 72], [13, 5, 210, 210, 210], [14, 5, 204, 204, 204], [15, 5, 175, 175, 175],
+  [9, 6, 175, 175, 175], [10, 6, 202, 202, 202], [11, 6, 223, 223, 223], [12, 6, 213, 213, 213], [13, 6, 218, 218, 218], [14, 6, 205, 205, 206], [15, 6, 174, 174, 174],
+  [8, 7, 81, 56, 14], [9, 7, 58, 40, 7], [10, 7, 174, 174, 174], [11, 7, 202, 202, 202], [12, 7, 218, 218, 218], [13, 7, 177, 177, 177], [14, 7, 174, 174, 174],
+  [7, 8, 81, 56, 14], [8, 8, 58, 40, 7], [11, 8, 174, 174, 174], [12, 8, 177, 177, 177], [13, 8, 175, 175, 175],
+  [6, 9, 81, 56, 14], [7, 9, 58, 40, 7], [12, 9, 175, 175, 175],
+  [5, 10, 81, 56, 14], [6, 10, 58, 40, 7],
+  [4, 11, 81, 56, 14], [5, 11, 58, 40, 7],
+  [3, 12, 81, 56, 14], [4, 12, 58, 40, 7],
+  [2, 13, 81, 56, 14], [3, 13, 58, 40, 7],
+  [1, 14, 81, 56, 14], [2, 14, 58, 40, 7],
+  [0, 15, 81, 56, 14], [1, 15, 58, 40, 7],
+];
 
-/**
- * Traced pixel-for-pixel from the user's own hand-drawn reference sketch (a
- * 16x16 grid photographed and measured cell by cell): a lumpy grey head with
- * a golden cross and blue gem, on a diagonal two-tone wooden handle. Listed
- * as [x, y] coordinates per color rather than computed, since the shape is
- * intentionally irregular / hand-drawn, not a clean geometric primitive.
- */
 function wardenHammer() {
   const c = new Canvas(16, 16);
   c.rect(0, 0, 16, 16, CLEAR);
-
-  const grey = [
-    [10, 0],
-    [9, 1], [10, 1], [11, 1],
-    [8, 2], [9, 2], [10, 2], [11, 2],
-    [7, 3], [8, 3], [9, 3],
-    [7, 4], [8, 4], [9, 4], [13, 4], [14, 4],
-    [8, 5], [9, 5], [10, 5], [13, 5], [14, 5], [15, 5],
-    [9, 6], [10, 6], [11, 6], [12, 6], [13, 6], [14, 6], [15, 6],
-    [10, 7], [11, 7], [12, 7], [13, 7], [14, 7],
-    [11, 8], [12, 8], [13, 8],
-    [12, 9],
-  ];
-  for (const [x, y] of grey) c.set(x, y, HAMMER_GREY);
-
-  const gold = [
-    [12, 2],
-    [10, 3], [11, 3], [12, 3], [13, 3],
-    [10, 4], [12, 4],
-    [11, 5], [12, 5],
-  ];
-  for (const [x, y] of gold) c.set(x, y, GOLD);
-
-  c.set(11, 4, BLUE_TIP);
-
-  // diagonal handle: light shade on the upper-left of each step, dark on the lower-right
-  const handleSteps = [
-    [8, 7], [7, 8], [6, 9], [5, 10], [4, 11], [3, 12], [2, 13], [1, 14], [0, 15],
-  ];
-  for (const [x, y] of handleSteps) {
-    c.set(x, y, HAMMER_WOOD_LIGHT);
-    c.set(x + 1, y, HAMMER_WOOD_DARK);
-  }
-
+  for (const [x, y, r, g, b] of WARDEN_HAMMER_PIXELS) c.set(x, y, [r, g, b]);
   return c;
 }
 
