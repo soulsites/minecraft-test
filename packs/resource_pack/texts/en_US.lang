@@ -9,3 +9,5 @@ item.spawn_egg.entity.myaddon:frost_golem.name=Spawn Frost Golem
 item.myaddon:sonic_bow.name=Sonic Bow
 item.myaddon:echo_charge.name=Echo Charge
 entity.myaddon:sonic_boom.name=Sonic Boom
+item.myaddon:warden_ingot.name=Warden Ingot
+item.myaddon:warden_hammer.name=Warden Hammer

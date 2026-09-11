@@ -25,6 +25,12 @@
     },
     "echo_charge": {
       "textures": "textures/items/echo_charge"
+    },
+    "warden_ingot": {
+      "textures": "textures/items/warden_ingot"
+    },
+    "warden_hammer": {
+      "textures": "textures/items/warden_hammer"
     }
   }
 }

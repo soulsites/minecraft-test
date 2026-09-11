@@ -299,8 +299,52 @@ function crosshairDot() {
   return c;
 }
 
+/** Ingot silhouette (same shape language as vanilla ingots), sculk-toned. */
+function wardenIngot() {
+  const c = new Canvas(16, 16);
+  c.rect(0, 0, 16, 16, CLEAR);
+  const rows = [
+    [5, 6, 6],
+    [4, 8, 5],
+    [4, 8, 6],
+    [4, 8, 7],
+    [4, 8, 8],
+    [4, 8, 9],
+    [5, 6, 10],
+  ];
+  for (const [x, w, y] of rows) {
+    for (let dx = 0; dx < w; dx++) {
+      const shade = dx === 0 ? SCULK_DARK : dx === w - 1 ? SCULK_GLOW : SCULK;
+      c.set(x + dx, y, shade);
+    }
+  }
+  return c;
+}
+
+/** Iron hammer head on a wooden handle. */
+function wardenHammer() {
+  const c = new Canvas(16, 16);
+  c.rect(0, 0, 16, 16, CLEAR);
+  // handle, bottom-left to center, reaching all the way up to the head
+  for (let i = 0; i < 11; i++) c.set(2 + i, 14 - i, WOOD);
+  // hammer head, top-right, angled block
+  const head = [
+    [8, 0], [9, 0], [10, 0], [11, 0],
+    [7, 1], [8, 1], [9, 1], [10, 1], [11, 1], [12, 1],
+    [7, 2], [8, 2], [9, 2], [10, 2], [11, 2], [12, 2],
+    [8, 3], [9, 3], [10, 3], [11, 3],
+  ];
+  for (const [x, y] of head) c.set(x, y, STONE);
+  c.set(8, 0, STONE_DARK);
+  c.set(11, 3, STONE_DARK);
+  c.rect(9, 1, 2, 2, SCULK_GLOW);
+  return c;
+}
+
 const OUTPUTS = {
   "packs/resource_pack/textures/ui/sonic_bow_crosshair.png": crosshairDot,
+  "packs/resource_pack/textures/items/warden_ingot.png": wardenIngot,
+  "packs/resource_pack/textures/items/warden_hammer.png": wardenHammer,
   "packs/resource_pack/textures/items/frost_shard.png": frostShard,
   "packs/resource_pack/textures/items/frost_wand.png": frostWand,
   "packs/resource_pack/textures/blocks/frost_ore.png": frostOre,

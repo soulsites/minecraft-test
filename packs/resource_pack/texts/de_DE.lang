@@ -9,3 +9,5 @@ item.spawn_egg.entity.myaddon:frost_golem.name=Frostgolem spawnen
 item.myaddon:sonic_bow.name=Schallbogen
 item.myaddon:echo_charge.name=Echo-Ladung
 entity.myaddon:sonic_boom.name=Schallstoss
+item.myaddon:warden_ingot.name=Warden-Barren
+item.myaddon:warden_hammer.name=Warden-Hammer

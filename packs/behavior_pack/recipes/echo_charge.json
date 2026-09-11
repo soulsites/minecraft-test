@@ -4,8 +4,8 @@
     "description": { "identifier": "myaddon:echo_charge" },
     "tags": ["crafting_table"],
     "ingredients": [
-      { "item": "minecraft:amethyst_shard" },
-      { "item": "myaddon:frost_shard" }
+      { "item": "minecraft:arrow", "count": 4 },
+      { "item": "minecraft:echo_shard" }
     ],
     "result": { "item": "myaddon:echo_charge", "count": 4 }
   }

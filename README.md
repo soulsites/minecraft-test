@@ -14,10 +14,39 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
 | Item   | `myaddon:sonic_bow`    | Schallbogen: verschiesst statt Pfeilen den Sonic Boom des Wardens |
 | Item   | `myaddon:echo_charge`  | Munition des Schallbogens |
 | Entity | `myaddon:sonic_boom`   | Sichtbarer Pfeil, umhuellt vom echten Sonic-Boom-Partikel des Wardens |
+| Item   | `myaddon:warden_ingot` | Craftingmaterial aus einem Echosplitter, Zutat fuer den Schallbogen |
+| Item   | `myaddon:warden_hammer`| Schmiede-Werkzeug, noetig um am Schmiedetisch aus einem Bogen einen Schallbogen zu machen |
+
+### Beschaffung
+
+- **Echo-Ladung** (Munition): 4x `minecraft:arrow` + 1x `minecraft:echo_shard`
+  am Crafting-Tisch ergibt 4x `myaddon:echo_charge`.
+- **Warden-Barren**: 1x `minecraft:echo_shard` wird am Crafting-Tisch direkt zu
+  1x `myaddon:warden_ingot` umgecraftet.
+- **Warden-Hammer**: am Crafting-Tisch, 3x3-Muster — oben eine Reihe Eisen,
+  in der Mitte links/rechts Eisen mit einem Stock dazwischen, darunter noch
+  ein Stock als Griff:
+  ```
+  I I I
+  I S I
+  . S .
+  ```
+  (`I` = Eisenbarren, `S` = Stock). Siehe `packs/behavior_pack/recipes/warden_hammer.json`.
+- **Schallbogen**: Am **Schmiedetisch** (nicht Amboss — der Amboss in Bedrock
+  hat eine feste UI fuer Umbenennen/Reparieren/Verzaubern und laesst sich
+  nicht mit eigenen Rezepten erweitern; der Schmiedetisch ist der Vanilla-Block,
+  der genau dieses "Werkzeug + Grundgegenstand + Zusatz -> neuer Gegenstand"
+  macht, z. B. beim Netherit-Upgrade) legt man `myaddon:warden_hammer` als
+  Template, einen ganz normalen `minecraft:bow` als Basis und
+  `myaddon:warden_ingot` als Zusatz ein und erhaelt `myaddon:sonic_bow`. Der
+  Hammer wird dabei wie ein normales Schmiedetisch-Template verbraucht (dafuer
+  ist er billig genug, um sich mehrere auf Vorrat zu craften) — ein
+  wiederverwendbares Werkzeug dafuer laesst sich in Bedrock nicht abbilden,
+  da Schmiedetisch-Rezepte immer alle drei Slots verbrauchen. Siehe
+  `packs/behavior_pack/recipes/sonic_bow_upgrade.json`.
 
 ### Schallbogen im Detail
 
-- Munition ist `myaddon:echo_charge` (Amethystsplitter + Frostsplitter ergibt 4 Stueck).
 - Verhaelt sich wie ein echter Bogen (halten = ziehen, loslassen = schiessen,
   Kraft skaliert mit Ziehdauer), nicht wie eine Armbrust.
 - Werte (Haltbarkeit 384, Verzauberbarkeit 1, Bewegungsverlangsamung 0.35,
@@ -134,8 +163,12 @@ beim Packaging, also genau dann, wenn eine neue Datei zum Testen entsteht.
    /give @s myaddon:frost_wand
    /setblock ~ ~ ~1 myaddon:frost_ore
    /summon myaddon:frost_golem
-   /give @s myaddon:sonic_bow
    /give @s myaddon:echo_charge 16
+   ```
+   Den Schallbogen selbst gibt's nur noch ueber die Beschaffungskette (siehe
+   oben) — zum schnellen Testen per Kreativmodus/Befehl geht auch:
+   ```
+   /give @s myaddon:sonic_bow
    ```
 
 ## Erweitern
