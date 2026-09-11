@@ -48,17 +48,37 @@ npm run build       # Skripte buendeln + Packs nach dist/ kopieren
 npm run watch       # Rebuild bei jeder Aenderung
 npm run typecheck   # tsc --noEmit
 npm run textures    # Platzhalter-Texturen neu erzeugen
-npm run package     # dist/ zu frost-addon.mcaddon zippen (minifiziert)
+npm run package     # Version hochzaehlen + frost-addon-x.y.z.mcaddon bauen
 npm run deploy      # dist/ in die lokalen com.mojang Development-Ordner kopieren
 ```
 
 `npm run deploy` sucht den `com.mojang`-Ordner automatisch (Windows UWP bzw.
 mcpelauncher). Alternativ den Pfad per Umgebungsvariable `COM_MOJANG` setzen.
 
+## Versionierung
+
+Die Version steht einzig in `package.json` ("version"). `npm run package`:
+
+1. zaehlt die Patch-Version automatisch hoch (z. B. 1.0.0 -> 1.0.1),
+2. schreibt sie in beide `manifest.json` (Header, Module, gegenseitige
+   Abhaengigkeit) sowie in `pack.name` jeder `texts/*.lang`-Datei,
+3. benennt die Ausgabedatei danach: `frost-addon-1.0.1.mcaddon`.
+
+Dadurch hat jede exportierte Datei eine eigene, hoehere Versionsnummer als die
+vorherige. Minecraft erkennt Behavior- und Resource-Pack dann automatisch als
+**Upgrade** desselben Packs (gleiche UUID, hoehere Version) — das alte Pack
+muss vor dem Import **nicht** geloescht werden. Der Name im Minecraft-
+Pack-Menue (z. B. "Frost Addon [BP] v1.0.1") zeigt zusaetzlich sofort, welche
+Version gerade aktiv ist.
+
+`npm run build` / `npm run watch` stempeln nur die aktuelle, noch nicht
+gebumpte Version (kein Zaehlerinkrement) — der Bump passiert ausschliesslich
+beim Packaging, also genau dann, wenn eine neue Datei zum Testen entsteht.
+
 ## Im Spiel testen
 
-1. `npm run package` ausfuehren und `frost-addon.mcaddon` doppelklicken
-   (oder `npm run deploy` fuer den Development-Ordner).
+1. `npm run package` ausfuehren und die neu erzeugte `frost-addon-x.y.z.mcaddon`
+   doppelklicken (oder `npm run deploy` fuer den Development-Ordner).
 2. Welt anlegen, Behavior Pack **und** Resource Pack aktivieren.
 3. In den Welteinstellungen **Beta APIs** aktivieren — ohne das laedt das
    Skriptmodul nicht.

@@ -1,4 +1,4 @@
-pack.name=Frost Addon [RP]
+pack.name=Frost Addon [RP] v{{VERSION}}
 pack.description=Ressourcenpaket: Texturen, Modelle und Namen fuer das Frost Addon.
 
 item.myaddon:frost_wand.name=Froststab
