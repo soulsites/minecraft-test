@@ -1,5 +1,5 @@
 {
-  "format_version": "1.21.60",
+  "format_version": "1.20.10",
   "minecraft:recipe_shaped": {
     "description": { "identifier": "myaddon:warden_ingot" },
     "tags": ["crafting_table"],
@@ -8,6 +8,7 @@
       "S": { "item": "minecraft:sculk" },
       "E": { "item": "minecraft:echo_shard" }
     },
+    "unlock": { "context": "AlwaysUnlocked" },
     "result": { "item": "myaddon:warden_ingot", "count": 1 }
   }
 }

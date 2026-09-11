@@ -1,5 +1,5 @@
 {
-  "format_version": "1.21.60",
+  "format_version": "1.20.10",
   "minecraft:recipe_shaped": {
     "description": { "identifier": "myaddon:warden_hammer" },
     "tags": ["crafting_table"],
@@ -8,6 +8,7 @@
       "I": { "item": "minecraft:iron_ingot" },
       "S": { "item": "minecraft:stick" }
     },
+    "unlock": { "context": "AlwaysUnlocked" },
     "result": { "item": "myaddon:warden_hammer", "count": 1 }
   }
 }
