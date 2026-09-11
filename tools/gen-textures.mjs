@@ -101,6 +101,8 @@ const ARROW_SHAFT_DARK = [130, 100, 64];
 const FLETCHING = [235, 235, 235];
 const BLUE_TIP = [60, 116, 209];
 const BLUE_TIP_LIGHT = [127, 168, 239];
+const GOLD = [237, 201, 80];
+const GOLD_DARK = [189, 152, 46];
 const CLEAR = [0, 0, 0, 0];
 
 /**
@@ -322,22 +324,39 @@ function wardenIngot() {
 }
 
 /** Iron hammer head on a wooden handle. */
+/**
+ * Round mace-like head (not a rectangular block) with a golden cross and a
+ * blue gem at its center, on a diagonal wooden handle - matches the shape
+ * the user sketched by hand.
+ */
 function wardenHammer() {
   const c = new Canvas(16, 16);
   c.rect(0, 0, 16, 16, CLEAR);
-  // handle, bottom-left to center, reaching all the way up to the head
-  for (let i = 0; i < 11; i++) c.set(2 + i, 14 - i, WOOD);
-  // hammer head, top-right, angled block
-  const head = [
-    [8, 0], [9, 0], [10, 0], [11, 0],
-    [7, 1], [8, 1], [9, 1], [10, 1], [11, 1], [12, 1],
-    [7, 2], [8, 2], [9, 2], [10, 2], [11, 2], [12, 2],
-    [8, 3], [9, 3], [10, 3], [11, 3],
-  ];
-  for (const [x, y] of head) c.set(x, y, STONE);
-  c.set(8, 0, STONE_DARK);
-  c.set(11, 3, STONE_DARK);
-  c.rect(9, 1, 2, 2, SCULK_GLOW);
+
+  // handle: diagonal from the bottom-left corner up into the head
+  for (let i = 0; i < 8; i++) c.set(1 + i, 14 - i, WOOD);
+
+  // round head, centered around (11, 5)
+  const headCenter = { x: 11, y: 5 };
+  const headRadius = 5;
+  for (let y = 0; y <= 15; y++) {
+    for (let x = 0; x <= 15; x++) {
+      const d = Math.hypot(x - headCenter.x, y - headCenter.y);
+      if (d > headRadius) continue;
+      c.set(x, y, d > headRadius - 1 ? STONE_DARK : STONE);
+    }
+  }
+
+  // golden cross on top of the head
+  c.rect(headCenter.x - 2, headCenter.y - 1, 5, 2, GOLD);
+  c.rect(headCenter.x - 1, headCenter.y - 2, 2, 5, GOLD);
+  c.set(headCenter.x - 2, headCenter.y - 1, GOLD_DARK);
+  c.set(headCenter.x + 2, headCenter.y + 1, GOLD_DARK);
+
+  // blue gem right in the middle of the cross
+  c.rect(headCenter.x - 1, headCenter.y - 1, 2, 2, BLUE_TIP);
+  c.set(headCenter.x - 1, headCenter.y - 1, BLUE_TIP_LIGHT);
+
   return c;
 }
 
