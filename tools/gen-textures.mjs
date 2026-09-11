@@ -329,33 +329,52 @@ function wardenIngot() {
  * blue gem at its center, on a diagonal wooden handle - matches the shape
  * the user sketched by hand.
  */
+const HAMMER_GREY = [150, 148, 163];
+const HAMMER_WOOD_LIGHT = [150, 113, 101];
+const HAMMER_WOOD_DARK = [110, 88, 83];
+
+/**
+ * Traced pixel-for-pixel from the user's own hand-drawn reference sketch (a
+ * 16x16 grid photographed and measured cell by cell): a lumpy grey head with
+ * a golden cross and blue gem, on a diagonal two-tone wooden handle. Listed
+ * as [x, y] coordinates per color rather than computed, since the shape is
+ * intentionally irregular / hand-drawn, not a clean geometric primitive.
+ */
 function wardenHammer() {
   const c = new Canvas(16, 16);
   c.rect(0, 0, 16, 16, CLEAR);
 
-  // handle: diagonal from the bottom-left corner up into the head
-  for (let i = 0; i < 8; i++) c.set(1 + i, 14 - i, WOOD);
+  const grey = [
+    [10, 0],
+    [9, 1], [10, 1], [11, 1],
+    [8, 2], [9, 2], [10, 2], [11, 2],
+    [7, 3], [8, 3], [9, 3],
+    [7, 4], [8, 4], [9, 4], [14, 4],
+    [8, 5], [9, 5], [10, 5], [13, 5], [14, 5],
+    [9, 6], [10, 6], [11, 6], [12, 6], [13, 6], [14, 6], [15, 6],
+    [10, 7], [11, 7], [12, 7], [13, 7],
+    [11, 8], [12, 8], [13, 8],
+  ];
+  for (const [x, y] of grey) c.set(x, y, HAMMER_GREY);
 
-  // round head, centered around (11, 5)
-  const headCenter = { x: 11, y: 5 };
-  const headRadius = 5;
-  for (let y = 0; y <= 15; y++) {
-    for (let x = 0; x <= 15; x++) {
-      const d = Math.hypot(x - headCenter.x, y - headCenter.y);
-      if (d > headRadius) continue;
-      c.set(x, y, d > headRadius - 1 ? STONE_DARK : STONE);
-    }
+  const gold = [
+    [12, 2],
+    [10, 3], [11, 3], [12, 3], [13, 3],
+    [10, 4], [12, 4], [13, 4],
+    [11, 5], [12, 5],
+  ];
+  for (const [x, y] of gold) c.set(x, y, GOLD);
+
+  c.set(11, 4, BLUE_TIP);
+
+  // diagonal handle: light shade on the upper-left of each step, dark on the lower-right
+  const handleSteps = [
+    [8, 7], [7, 8], [6, 9], [5, 10], [4, 11], [3, 12], [2, 13], [1, 14], [0, 15],
+  ];
+  for (const [x, y] of handleSteps) {
+    c.set(x, y, HAMMER_WOOD_LIGHT);
+    c.set(x + 1, y, HAMMER_WOOD_DARK);
   }
-
-  // golden cross on top of the head
-  c.rect(headCenter.x - 2, headCenter.y - 1, 5, 2, GOLD);
-  c.rect(headCenter.x - 1, headCenter.y - 2, 2, 5, GOLD);
-  c.set(headCenter.x - 2, headCenter.y - 1, GOLD_DARK);
-  c.set(headCenter.x + 2, headCenter.y + 1, GOLD_DARK);
-
-  // blue gem right in the middle of the cross
-  c.rect(headCenter.x - 1, headCenter.y - 1, 2, 2, BLUE_TIP);
-  c.set(headCenter.x - 1, headCenter.y - 1, BLUE_TIP_LIGHT);
 
   return c;
 }
