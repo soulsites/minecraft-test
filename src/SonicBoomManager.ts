@@ -9,6 +9,7 @@ import {
   type EntitySpawnAfterEvent,
   type ProjectileHitBlockAfterEvent,
   type ProjectileHitEntityAfterEvent,
+  type Vector2,
   type Vector3,
 } from "@minecraft/server";
 import { Identifiers, SONIC_EXPLOSION_PARTICLE, SonicBowConfig, WardenSounds } from "./config";
@@ -61,10 +62,10 @@ export class SonicBoomManager {
   };
 
   /**
-   * Advances every shot still in the air: wraps its current position in the
-   * warden's sonic boom particle and, once it has covered
-   * `maxTravelDistance` blocks without hitting anything, lets the shockwave
-   * dissipate there.
+   * Advances every shot still in the air: forces its model to face its
+   * actual velocity, wraps its current position in the warden's sonic boom
+   * particle and, once it has covered `maxTravelDistance` blocks without
+   * hitting anything, lets the shockwave dissipate there.
    */
   private tick(): void {
     for (const [id, shot] of this.shots) {
@@ -77,6 +78,8 @@ export class SonicBoomManager {
         const heading = SonicBoomManager.subtract(location, shot.lastLocation);
         shot.traveledDistance += SonicBoomManager.length(heading);
         shot.lastLocation = location;
+
+        this.faceVelocity(shot.projectile);
 
         shot.ticksSinceTrail++;
         if (shot.ticksSinceTrail >= SonicBowConfig.trailSpawnIntervalTicks) {
@@ -92,6 +95,29 @@ export class SonicBoomManager {
         this.shots.delete(id);
       }
     }
+  }
+
+  /**
+   * Forces the projectile's model to point along its actual velocity,
+   * regardless of which compass direction that is. The engine's own
+   * rotate-to-velocity behaviour for this custom projectile turned out to
+   * only line up for some headings and flip the model backwards for
+   * others - this computes yaw/pitch directly from the real velocity vector
+   * every tick instead of trusting that.
+   */
+  private faceVelocity(projectile: Entity): void {
+    const rotation = SonicBoomManager.rotationFromVelocity(projectile.getVelocity());
+    if (rotation) projectile.setRotation(rotation);
+  }
+
+  /** Standard Minecraft yaw/pitch (in degrees) pointing along `velocity`. */
+  private static rotationFromVelocity(velocity: Vector3): Vector2 | undefined {
+    const horizontalSpeed = Math.hypot(velocity.x, velocity.z);
+    if (horizontalSpeed < 1e-4 && Math.abs(velocity.y) < 1e-4) return undefined;
+
+    const yaw = (Math.atan2(-velocity.x, velocity.z) * 180) / Math.PI;
+    const pitch = (Math.atan2(-velocity.y, horizontalSpeed) * 180) / Math.PI;
+    return { x: pitch, y: yaw };
   }
 
   /**

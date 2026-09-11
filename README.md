@@ -38,16 +38,26 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
   Siehe `packs/resource_pack/attachables/sonic_bow.json`.
 - Fadenkreuz: Das native Touch-Ziel-Reticle, das beim Ziehen eines *echten*
   Vanilla-Bogens automatisch erscheint, ist in keiner Resource-Pack-Datei
-  data-getrieben (`hud_screen.json` hat dafuer keinerlei Bindung) — es scheint
-  hart an die Vanilla-Item-ID gekoppelt zu sein. Der Text-Ersatz (`+` per
-  `setTitle`) wurde auf Wunsch wieder entfernt, da er weder zentriert war noch
-  gut aussah (Titles haben in Bedrock eine feste Textkontur/Umrandung, die sich
-  nicht abschalten laesst). Es gibt aktuell keinen Ersatz dafuer — nach
-  aktuellem Kenntnisstand ist das eine Engine-Grenze fuer Custom-Items.
+  data-getrieben (`hud_screen.json` hat dafuer keinerlei Bindung) und scheint
+  hart an die Vanilla-Item-ID gekoppelt zu sein. Als echter Grafik-Ersatz gibt
+  es jetzt `packs/resource_pack/ui/hud_screen.json`: eine minimale, additive
+  Erweiterung von Vanillas eigenem `hud_screen.json` (`"modifications"` haengt
+  ein zusaetzliches Element an `root_panel/controls` an, ohne etwas
+  Bestehendes zu ersetzen), die einen 2x2 Pixel grossen, blauen Punkt
+  (`textures/ui/sonic_bow_crosshair.png`) exakt in die Bildschirmmitte setzt
+  (`anchor_from`/`anchor_to: "center"`) — kein Text, also auch keine
+  Schriftkontur mehr. **Einschraenkung:** Die JSON-UI-Bindings sind auf eine
+  feste Namensliste (`#hud_...`) beschraenkt, es gibt keine Bindung fuer
+  "Spieler zieht gerade einen Bogen" — der Punkt ist deshalb technisch bedingt
+  immer sichtbar, nicht nur waehrend des Ziehens.
 - Das Geschoss ist ein sichtbarer Pfeil (Holzschaft, Befiederung, blaue
-  Spitze), fliegt schwerelos und komplett gerade (`gravity: 0`, nicht
-  schiebbar durch Entities/Kolben) und wird von Wardens echtem
-  `minecraft:sonic_explosion`-Partikel umhuellt — als kleiner Querschnitt
+  Spitze), fliegt schwerelos und **erzwungen komplett gerade**: die Ausrichtung
+  wird jeden Tick per Skript direkt aus der tatsaechlichen Geschwindigkeit
+  berechnet (`SonicBoomManager.faceVelocity`, Standard-Yaw/Pitch-Formel), nicht
+  der Engine ueberlassen — die hat das Modell abhaengig von der
+  Schuss-Himmelsrichtung teils falsch/rueckwaerts ausgerichtet. Zusaetzlich
+  nicht schiebbar durch Entities/Kolben und umhuellt von Wardens echtem
+  `minecraft:sonic_explosion`-Partikel — als kleiner Querschnitt
   (Mitte + 2 Punkte senkrecht zur Flugrichtung), gespawnt alle
   `trailSpawnIntervalTicks` (4) Ticks statt jeden Tick. Eine fruehere Version
   hat 5 Partikel *jeden* Tick gespawnt, was bei einem langsamen, bis zu

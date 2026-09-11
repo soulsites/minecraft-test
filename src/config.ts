@@ -39,9 +39,9 @@ export const FrostGolemConfig = {
 
 export const SonicBowConfig = {
   /** Damage of a direct hit. Bypasses armour like the warden's sonic boom. */
-  directDamage: 10,
+  directDamage: 40,
   /** Damage dealt to everything else inside the impact radius. */
-  splashDamage: 5,
+  splashDamage: 20,
   /** Radius in blocks of the shockwave on impact. */
   splashRadius: 3.5,
   /** Horizontal / vertical knockback of the shockwave. */

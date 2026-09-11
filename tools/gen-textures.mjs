@@ -292,7 +292,15 @@ function bowArrowNock() {
   return c;
 }
 
+/** A solid 2x2 blue dot - the crosshair overlay added to hud_screen.json. */
+function crosshairDot() {
+  const c = new Canvas(2, 2);
+  c.rect(0, 0, 2, 2, BLUE_TIP);
+  return c;
+}
+
 const OUTPUTS = {
+  "packs/resource_pack/textures/ui/sonic_bow_crosshair.png": crosshairDot,
   "packs/resource_pack/textures/items/frost_shard.png": frostShard,
   "packs/resource_pack/textures/items/frost_wand.png": frostWand,
   "packs/resource_pack/textures/blocks/frost_ore.png": frostOre,
