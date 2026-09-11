@@ -173,10 +173,15 @@ function frostGolem() {
   return c;
 }
 
-function sonicBow() {
+/**
+ * Draws the bow at one of its four pull stages (0 = resting, 3 = fully drawn).
+ * The string pulls back and the grip glows brighter the further it is drawn -
+ * this is the vanilla bow.json trick: same geometry, one texture per stage,
+ * swapped by a render controller keyed on the draw progress.
+ */
+function sonicBow(stage = 0) {
   const c = new Canvas(16, 16);
   c.rect(0, 0, 16, 16, CLEAR);
-  // bow limbs: a simple arc drawn as short segments
   const arc = [
     [11, 1], [12, 2], [13, 3], [13, 4], [14, 5], [14, 6],
     [14, 7], [14, 8], [14, 9], [13, 10], [13, 11], [12, 12], [11, 13],
@@ -185,10 +190,19 @@ function sonicBow() {
     c.set(x, y, SCULK);
     c.set(x - 1, y, SCULK_DARK);
   }
-  // string
-  for (let y = 2; y <= 12; y++) c.set(10 - Math.round(Math.abs(7 - y) * 0.2), y, ICE_LIGHT);
-  // sculk core glow in the grip
-  c.rect(12, 6, 2, 3, SCULK_GLOW);
+  // string: pulls back towards the grip as the stage increases
+  const pull = stage * 1.4;
+  for (let y = 2; y <= 12; y++) {
+    const x = 10 - Math.round(Math.abs(7 - y) * 0.2) - Math.round(pull * (1 - Math.abs(7 - y) / 6));
+    c.set(x, y, ICE_LIGHT);
+  }
+  // grip glow brightens with the draw
+  const glow = [
+    Math.min(255, SCULK_GLOW[0] + stage * 20),
+    Math.min(255, SCULK_GLOW[1] + stage * 10),
+    Math.min(255, SCULK_GLOW[2] + stage * 10),
+  ];
+  c.rect(12, 6, 2, 3, glow);
   return c;
 }
 
@@ -233,7 +247,10 @@ const OUTPUTS = {
   "packs/resource_pack/textures/items/frost_wand.png": frostWand,
   "packs/resource_pack/textures/blocks/frost_ore.png": frostOre,
   "packs/resource_pack/textures/entity/frost_golem.png": frostGolem,
-  "packs/resource_pack/textures/items/sonic_bow.png": sonicBow,
+  "packs/resource_pack/textures/items/sonic_bow.png": () => sonicBow(0),
+  "packs/resource_pack/textures/items/sonic_bow_pulling_0.png": () => sonicBow(1),
+  "packs/resource_pack/textures/items/sonic_bow_pulling_1.png": () => sonicBow(2),
+  "packs/resource_pack/textures/items/sonic_bow_pulling_2.png": () => sonicBow(3),
   "packs/resource_pack/textures/items/echo_charge.png": echoCharge,
   "packs/resource_pack/textures/particle/sonic_ring.png": sonicRing,
   "packs/resource_pack/textures/entity/sonic_boom.png": invisible,

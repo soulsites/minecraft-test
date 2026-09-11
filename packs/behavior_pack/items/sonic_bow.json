@@ -22,10 +22,11 @@
           }
         ],
         "max_draw_duration": 1.2,
-        "scale_power_by_draw_duration": true,
-        "charge_on_draw": true
+        "scale_power_by_draw_duration": true
       },
-      "minecraft:use_modifiers": { "use_duration": 1.2, "movement_modifier": 0.28 }
+      "minecraft:use_modifiers": { "use_duration": 1.2, "movement_modifier": 0.28 },
+      "minecraft:use_animation": "bow",
+      "minecraft:render_offsets": "bow"
     }
   }
 }

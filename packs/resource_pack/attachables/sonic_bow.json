@@ -1,0 +1,17 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:attachable": {
+    "description": {
+      "identifier": "myaddon:sonic_bow",
+      "materials": { "default": "entity_alphatest_one_sided" },
+      "textures": {
+        "default": "textures/items/sonic_bow",
+        "pulling_0": "textures/items/sonic_bow_pulling_0",
+        "pulling_1": "textures/items/sonic_bow_pulling_1",
+        "pulling_2": "textures/items/sonic_bow_pulling_2"
+      },
+      "geometry": { "default": "geometry.sonic_bow" },
+      "render_controllers": ["controller.render.sonic_bow"]
+    }
+  }
+}

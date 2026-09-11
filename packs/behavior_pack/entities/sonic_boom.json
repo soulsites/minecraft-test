@@ -18,7 +18,7 @@
       "minecraft:physics": { "has_gravity": false, "has_collision": false },
       "minecraft:conditional_bandwidth_optimization": {},
       "minecraft:projectile": {
-        "power": 3.2,
+        "power": 1.2,
         "gravity": 0.0,
         "inertia": 1.0,
         "liquid_inertia": 1.0,
