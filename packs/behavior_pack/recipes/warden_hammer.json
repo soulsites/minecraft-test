@@ -3,7 +3,7 @@
   "minecraft:recipe_shaped": {
     "description": { "identifier": "myaddon:warden_hammer" },
     "tags": ["crafting_table"],
-    "pattern": [" GI", "IDI", "IS "],
+    "pattern": ["IGI", "IDI", " S "],
     "key": {
       "G": { "item": "minecraft:gold_ingot" },
       "I": { "item": "minecraft:iron_ingot" },

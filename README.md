@@ -32,9 +32,9 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
   Siehe `packs/behavior_pack/recipes/warden_ingot.json`.
 - **Hammer** (`myaddon:warden_hammer`): am Crafting-Tisch, 3x3-Muster:
   ```
-  . G I
+  I G I
   I D I
-  I S .
+  . S .
   ```
   (`G` = Goldbarren, `I` = Eisenbarren, `D` = Diamant, `S` = Stock). Siehe
   `packs/behavior_pack/recipes/warden_hammer.json`.
