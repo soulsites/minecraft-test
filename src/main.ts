@@ -1,7 +1,7 @@
 import { system } from "@minecraft/server";
 import { FrostOreComponent } from "./components/FrostOreComponent";
 import { FrostWandComponent } from "./components/FrostWandComponent";
-import { CrosshairGuard } from "./CrosshairGuard";
+import { AimReticle } from "./AimReticle";
 import { FrostGolemManager } from "./FrostGolemManager";
 import { SonicBoomManager } from "./SonicBoomManager";
 
@@ -12,7 +12,7 @@ import { SonicBoomManager } from "./SonicBoomManager";
 class Addon {
   private readonly golems = new FrostGolemManager();
   private readonly sonicBooms = new SonicBoomManager();
-  private readonly crosshairGuard = new CrosshairGuard();
+  private readonly aimReticle = new AimReticle();
 
   public start(): void {
     system.beforeEvents.startup.subscribe((event) => {
@@ -28,7 +28,7 @@ class Addon {
 
     this.golems.register();
     this.sonicBooms.register();
-    this.crosshairGuard.register();
+    this.aimReticle.register();
   }
 }
 

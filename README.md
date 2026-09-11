@@ -33,14 +33,19 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
   das genau andersherum, wodurch die Animation rueckwaerts lief und die
   Ruhephase nie zu sehen war. Siehe
   `packs/resource_pack/attachables/sonic_bow.json`.
-- Touch-Fadenkreuz: `CrosshairGuard` (`src/CrosshairGuard.ts`) setzt das
-  Crosshair-HUD-Element beim Ziehen explizit zurueck auf sichtbar. Das
-  spezielle Ziel-Reticle, das Touch-Steuerungen beim Ziehen eines *echten*
-  Vanilla-Bogens automatisch einblenden, ist in keiner Resource-Pack-Datei
-  data-getrieben (in `hud_screen.json` gibt es dafuer keinerlei Bindung) —
-  es scheint hart mit der Vanilla-Item-ID verdrahtet zu sein. Falls es bei
-  `myaddon:sonic_bow` weiterhin fehlt, ist das nach aktuellem Kenntnisstand
-  eine Engine-Grenze fuer Custom-Items, keine behebbare Config-Sache.
+- Fadenkreuz: Das native Touch-Ziel-Reticle, das beim Ziehen eines *echten*
+  Vanilla-Bogens automatisch erscheint, ist in keiner Resource-Pack-Datei
+  data-getrieben (`hud_screen.json` hat dafuer keinerlei Bindung) — es
+  scheint hart an die Vanilla-Item-ID gekoppelt und ueber ein Custom-Item
+  nicht erzwingbar. Als Ersatz zeigt `AimReticle` (`src/AimReticle.ts`)
+  waehrend des Ziehens ein `+` in der Bildschirmmitte an (ueber
+  `onScreenDisplay.setTitle`, mit `fadeInDuration`/`fadeOutDuration: 0` fuer
+  sofortiges Ein-/Ausblenden bei `itemStartUse`/`itemReleaseUse`/`itemStopUse`)
+  — das ist die einzige Screen-Center-Overlay-Moeglichkeit, die die Script
+  API tatsaechlich bietet; die Position folgt der von Minecraft fuer Titles
+  vorgesehenen Stelle, nicht zwingend dem exakten Pixel-Zentrum. Setzt
+  zusaetzlich weiterhin das Crosshair-HUD-Element zurueck auf sichtbar,
+  falls es je unterdrueckt sein sollte.
 - Das Geschoss ist ein sichtbarer Pfeil (Holzschaft, Befiederung, blaue
   Spitze), fliegt schwerelos und komplett gerade (`gravity: 0`, nicht
   schiebbar durch Entities/Kolben) und wird von Wardens echtem
