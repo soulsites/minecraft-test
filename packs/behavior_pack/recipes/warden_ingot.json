@@ -5,7 +5,7 @@
     "tags": ["crafting_table"],
     "pattern": ["SSS", "SES", "SSS"],
     "key": {
-      "S": { "item": "minecraft:sculk" },
+      "S": { "item": "minecraft:netherite_scrap" },
       "E": { "item": "minecraft:echo_shard" }
     },
     "unlock": { "context": "AlwaysUnlocked" },

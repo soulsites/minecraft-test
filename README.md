@@ -22,14 +22,14 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
 - **Echo-Ladung** (Munition): 4x `minecraft:arrow` + 1x `minecraft:echo_shard`
   am Crafting-Tisch ergibt 4x `myaddon:echo_charge`.
 - **Warden-Barren**: am Crafting-Tisch, 3x3-Muster — 1x `minecraft:echo_shard`
-  in der Mitte, ringsherum 8x `minecraft:sculk`:
+  in der Mitte, ringsherum 8x `minecraft:netherite_scrap`:
   ```
   S S S
   S E S
   S S S
   ```
-  (`S` = Sculk, `E` = Echosplitter) ergibt 1x `myaddon:warden_ingot`. Siehe
-  `packs/behavior_pack/recipes/warden_ingot.json`.
+  (`S` = antiker Schrott, `E` = Echosplitter) ergibt 1x `myaddon:warden_ingot`.
+  Siehe `packs/behavior_pack/recipes/warden_ingot.json`.
 - **Warden-Hammer**: am Crafting-Tisch, 3x3-Muster — oben eine Reihe Eisen,
   in der Mitte links/rechts Eisen mit einem Stock dazwischen, darunter noch
   ein Stock als Griff:
