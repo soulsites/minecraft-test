@@ -19,6 +19,7 @@ interface Shot {
   readonly hitEntityIds: Set<string>;
   lastLocation: Vector3;
   traveledDistance: number;
+  ticksSinceTrail: number;
 }
 
 /**
@@ -52,6 +53,7 @@ export class SonicBoomManager {
       hitEntityIds: new Set(),
       lastLocation: projectile.location,
       traveledDistance: 0,
+      ticksSinceTrail: 0,
     });
 
     const shooter = this.ownerOf(projectile);
@@ -75,7 +77,12 @@ export class SonicBoomManager {
         const heading = SonicBoomManager.subtract(location, shot.lastLocation);
         shot.traveledDistance += SonicBoomManager.length(heading);
         shot.lastLocation = location;
-        this.drawSonicBoomSlice(shot.projectile.dimension, location, heading);
+
+        shot.ticksSinceTrail++;
+        if (shot.ticksSinceTrail >= SonicBowConfig.trailSpawnIntervalTicks) {
+          shot.ticksSinceTrail = 0;
+          this.drawSonicBoomSlice(shot.projectile.dimension, location, heading);
+        }
 
         if (shot.traveledDistance >= SonicBowConfig.maxTravelDistance) {
           this.detonate(shot.projectile, this.ownerOf(shot.projectile));
@@ -89,18 +96,19 @@ export class SonicBoomManager {
 
   /**
    * Spawns the warden's own particle in a small cross-section perpendicular
-   * to the flight direction, so the arrow sits inside a wide traveling tube
-   * of sonic booms instead of a single thin trail of dots.
+   * to the flight direction, so the arrow sits inside a wider traveling tube
+   * of sonic booms instead of a single thin trail of dots. Kept to 3
+   * particles (not a full 5-point cross) and only called every
+   * `trailSpawnIntervalTicks` ticks - a slow, long-lived shot spawning a
+   * full cross every single tick is what made this laggy before.
    */
   private drawSonicBoomSlice(dimension: Dimension, center: Vector3, heading: Vector3): void {
     dimension.spawnParticle(SONIC_EXPLOSION_PARTICLE, center);
 
     const { right, up } = SonicBoomManager.perpendicularAxes(heading);
     const radius = 0.4;
-    for (const axis of [right, up]) {
-      dimension.spawnParticle(SONIC_EXPLOSION_PARTICLE, SonicBoomManager.offset(center, axis, radius));
-      dimension.spawnParticle(SONIC_EXPLOSION_PARTICLE, SonicBoomManager.offset(center, axis, -radius));
-    }
+    dimension.spawnParticle(SONIC_EXPLOSION_PARTICLE, SonicBoomManager.offset(center, right, radius));
+    dimension.spawnParticle(SONIC_EXPLOSION_PARTICLE, SonicBoomManager.offset(center, up, -radius));
   }
 
   /** Two unit vectors perpendicular to `direction` (and to each other). */

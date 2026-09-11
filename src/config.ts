@@ -53,4 +53,11 @@ export const SonicBowConfig = {
   durabilityCostPerShot: 1,
   /** The shockwave dissipates on its own after travelling this far. */
   maxTravelDistance: 50,
+  /**
+   * Trail particles are spawned only every N ticks (not every tick) to keep
+   * a slow, long-lived, potentially multi-shot effect from flooding the
+   * client with particles and causing lag - the particle's own 0.8s
+   * lifetime still keeps the trail visually continuous at this rate.
+   */
+  trailSpawnIntervalTicks: 4,
 } as const;

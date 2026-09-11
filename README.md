@@ -22,25 +22,33 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
   Kraft skaliert mit Ziehdauer), nicht wie eine Armbrust.
 - Zug-Animation: Bogen-Icon und -Modell wechseln beim Ziehen durch 4 Stufen
   (Ruhe + 3 Zugstufen), nach dem Schema von Vanillas eigenem `bow.json` /
-  `bow.render_controllers.json` (Attachable + Render Controller) — nur mit
-  blau eingefaerbtem Griff in allen 4 Texturen und einer eigenen, robusten
-  Formel fuer den Ladefortschritt (`variable.charge_amount` direkt aus
-  `query.main_hand_item_use_duration` / eigener Ziehdauer in Ticks berechnet,
-  statt sich auf Vanillas `query.get_animation_frame` zu verlassen — die
-  Konstante 24 in `attachables/sonic_bow.json` muss zur `max_draw_duration`
-  in `items/sonic_bow.json` passen, aktuell 1.2 s = 24 Ticks). Auf den 3
-  Zugstufen liegt zusaetzlich ein genockter Pfeil (`sonic_bow_arrow_nock`)
-  ueber dem Bogen. Siehe `packs/resource_pack/attachables/sonic_bow.json`.
-- Touch-Steuerung: `CrosshairGuard` (`src/CrosshairGuard.ts`) setzt das
-  Crosshair-HUD-Element beim Ziehen explizit zurueck auf sichtbar, falls es
-  je unterdrueckt sein sollte.
+  `bow.render_controllers.json` (Attachable + Render Controller). Blau
+  eingefaerbter Griff in allen 4 Texturen, genockter Pfeil (`sonic_bow_arrow_nock`)
+  als Overlay auf den 3 Zugstufen. Der Ladefortschritt
+  (`variable.charge_amount`) wird aus `query.main_hand_item_max_duration` und
+  `query.main_hand_item_use_duration` berechnet: Letztere zaehlt laut
+  Script-API-Doku (`ItemStartUseAfterEvent.useDuration`) die **verbleibende**
+  Zeit runter, nicht die verstrichene hoch — `max_duration - use_duration`
+  liefert die tatsaechlich verstrichene Ziehzeit. Eine fruehere Version hatte
+  das genau andersherum, wodurch die Animation rueckwaerts lief und die
+  Ruhephase nie zu sehen war. Siehe
+  `packs/resource_pack/attachables/sonic_bow.json`.
+- Touch-Fadenkreuz: `CrosshairGuard` (`src/CrosshairGuard.ts`) setzt das
+  Crosshair-HUD-Element beim Ziehen explizit zurueck auf sichtbar. Das
+  spezielle Ziel-Reticle, das Touch-Steuerungen beim Ziehen eines *echten*
+  Vanilla-Bogens automatisch einblenden, ist in keiner Resource-Pack-Datei
+  data-getrieben (in `hud_screen.json` gibt es dafuer keinerlei Bindung) —
+  es scheint hart mit der Vanilla-Item-ID verdrahtet zu sein. Falls es bei
+  `myaddon:sonic_bow` weiterhin fehlt, ist das nach aktuellem Kenntnisstand
+  eine Engine-Grenze fuer Custom-Items, keine behebbare Config-Sache.
 - Das Geschoss ist ein sichtbarer Pfeil (Holzschaft, Befiederung, blaue
   Spitze), fliegt schwerelos und komplett gerade (`gravity: 0`, nicht
-  schiebbar durch Entities/Kolben) und wird auf dem gesamten Flug von
-  Wardens echtem `minecraft:sonic_explosion`-Partikel umhuellt — als
-  Querschnitt aus 5 Partikeln (Mitte + Kreuz senkrecht zur Flugrichtung), nicht
-  nur ein duenner Punktetrail, damit es wie der breite Schallstoss des Wardens
-  wirkt (kein eigenes Partikel-Asset, es ist buchstaeblich dasselbe Partikel).
+  schiebbar durch Entities/Kolben) und wird von Wardens echtem
+  `minecraft:sonic_explosion`-Partikel umhuellt — als kleiner Querschnitt
+  (Mitte + 2 Punkte senkrecht zur Flugrichtung), gespawnt alle
+  `trailSpawnIntervalTicks` (4) Ticks statt jeden Tick. Eine fruehere Version
+  hat 5 Partikel *jeden* Tick gespawnt, was bei einem langsamen, bis zu
+  50 Bloecke weit fliegenden Geschoss zu spuerbarem Lag fuehrte.
 - Treffer verursachen Schaden mit der Ursache `sonicBoom` — der ignoriert
   Ruestung und Schild, genau wie beim Warden.
 - Reichweite: Der Boom fliegt bis zu 50 Bloecke weit (script-seitig per
