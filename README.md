@@ -26,8 +26,12 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
   Auswahl per `query.get_animation_frame`) — nur mit blau eingefaerbtem Griff
   in allen 4 Texturen. Siehe `packs/resource_pack/attachables/sonic_bow.json`.
 - Das Geschoss ist ein sichtbarer Pfeil (Holzschaft, Befiederung, blaue
-  Spitze) und wird auf dem gesamten Flug von Wardens echtem
-  `minecraft:sonic_explosion`-Partikel umhuellt (kein eigenes Partikel-Asset).
+  Spitze), fliegt schwerelos und komplett gerade (`gravity: 0`, nicht
+  schiebbar durch Entities/Kolben) und wird auf dem gesamten Flug von
+  Wardens echtem `minecraft:sonic_explosion`-Partikel umhuellt — als
+  Querschnitt aus 5 Partikeln (Mitte + Kreuz senkrecht zur Flugrichtung), nicht
+  nur ein duenner Punktetrail, damit es wie der breite Schallstoss des Wardens
+  wirkt (kein eigenes Partikel-Asset, es ist buchstaeblich dasselbe Partikel).
 - Treffer verursachen Schaden mit der Ursache `sonicBoom` — der ignoriert
   Ruestung und Schild, genau wie beim Warden.
 - Reichweite: Der Boom fliegt bis zu 50 Bloecke weit (script-seitig per

@@ -59,9 +59,10 @@ export class SonicBoomManager {
   };
 
   /**
-   * Advances every shot still in the air: draws the sonic boom particle at
-   * its current position and, once it has covered `maxTravelDistance`
-   * blocks without hitting anything, lets the shockwave dissipate there.
+   * Advances every shot still in the air: wraps its current position in the
+   * warden's sonic boom particle and, once it has covered
+   * `maxTravelDistance` blocks without hitting anything, lets the shockwave
+   * dissipate there.
    */
   private tick(): void {
     for (const [id, shot] of this.shots) {
@@ -71,9 +72,10 @@ export class SonicBoomManager {
       }
       try {
         const location = shot.projectile.location;
-        shot.traveledDistance += SonicBoomManager.distance(location, shot.lastLocation);
+        const heading = SonicBoomManager.subtract(location, shot.lastLocation);
+        shot.traveledDistance += SonicBoomManager.length(heading);
         shot.lastLocation = location;
-        shot.projectile.dimension.spawnParticle(SONIC_EXPLOSION_PARTICLE, location);
+        this.drawSonicBoomSlice(shot.projectile.dimension, location, heading);
 
         if (shot.traveledDistance >= SonicBowConfig.maxTravelDistance) {
           this.detonate(shot.projectile, this.ownerOf(shot.projectile));
@@ -85,8 +87,54 @@ export class SonicBoomManager {
     }
   }
 
-  private static distance(a: Vector3, b: Vector3): number {
-    return Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
+  /**
+   * Spawns the warden's own particle in a small cross-section perpendicular
+   * to the flight direction, so the arrow sits inside a wide traveling tube
+   * of sonic booms instead of a single thin trail of dots.
+   */
+  private drawSonicBoomSlice(dimension: Dimension, center: Vector3, heading: Vector3): void {
+    dimension.spawnParticle(SONIC_EXPLOSION_PARTICLE, center);
+
+    const { right, up } = SonicBoomManager.perpendicularAxes(heading);
+    const radius = 0.4;
+    for (const axis of [right, up]) {
+      dimension.spawnParticle(SONIC_EXPLOSION_PARTICLE, SonicBoomManager.offset(center, axis, radius));
+      dimension.spawnParticle(SONIC_EXPLOSION_PARTICLE, SonicBoomManager.offset(center, axis, -radius));
+    }
+  }
+
+  /** Two unit vectors perpendicular to `direction` (and to each other). */
+  private static perpendicularAxes(direction: Vector3): { right: Vector3; up: Vector3 } {
+    const forward = SonicBoomManager.normalize(direction);
+    const worldUp = Math.abs(forward.y) > 0.99 ? { x: 1, y: 0, z: 0 } : { x: 0, y: 1, z: 0 };
+    const right = SonicBoomManager.normalize(SonicBoomManager.cross(forward, worldUp));
+    const up = SonicBoomManager.cross(right, forward);
+    return { right, up };
+  }
+
+  private static cross(a: Vector3, b: Vector3): Vector3 {
+    return {
+      x: a.y * b.z - a.z * b.y,
+      y: a.z * b.x - a.x * b.z,
+      z: a.x * b.y - a.y * b.x,
+    };
+  }
+
+  private static normalize(v: Vector3): Vector3 {
+    const length = SonicBoomManager.length(v) || 1;
+    return { x: v.x / length, y: v.y / length, z: v.z / length };
+  }
+
+  private static offset(origin: Vector3, axis: Vector3, amount: number): Vector3 {
+    return { x: origin.x + axis.x * amount, y: origin.y + axis.y * amount, z: origin.z + axis.z * amount };
+  }
+
+  private static subtract(a: Vector3, b: Vector3): Vector3 {
+    return { x: a.x - b.x, y: a.y - b.y, z: a.z - b.z };
+  }
+
+  private static length(v: Vector3): number {
+    return Math.hypot(v.x, v.y, v.z);
   }
 
   private ownerOf(projectile: Entity): Entity | undefined {
