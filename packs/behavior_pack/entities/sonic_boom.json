@@ -28,8 +28,7 @@
         "uncertainty_multiplier": 0,
         "should_bounce": false,
         "reflect_on_hurt": false,
-        "hit_sound": "warden.sonic_boom",
-        "shoot_sound": "warden.sonic_charge",
+        "shoot_sound": "mob.warden.sonic_charge",
         "shoot_target": false,
         "on_hit": {
           "impact_damage": {
@@ -42,7 +41,7 @@
       },
       "minecraft:timer": {
         "looping": false,
-        "time": 3.0,
+        "time": 15.0,
         "time_down_event": { "event": "myaddon:expire" }
       }
     },

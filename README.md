@@ -13,20 +13,33 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
 | Entity | `myaddon:frost_golem`  | Feindlicher Mob mit eigenem Modell, Spawn-Regeln in kalten Biomen und Enrage-Phase unter 50 % Leben |
 | Item   | `myaddon:sonic_bow`    | Schallbogen: verschiesst statt Pfeilen den Sonic Boom des Wardens |
 | Item   | `myaddon:echo_charge`  | Munition des Schallbogens |
-| Entity | `myaddon:sonic_boom`   | Unsichtbares Projektil, dessen Optik komplett aus eigenen Partikeln besteht |
+| Entity | `myaddon:sonic_boom`   | Sichtbarer Pfeil, umhuellt vom echten Sonic-Boom-Partikel des Wardens |
 
 ### Schallbogen im Detail
 
 - Munition ist `myaddon:echo_charge` (Amethystsplitter + Frostsplitter ergibt 4 Stueck).
-- Das Projektil fliegt schwerelos und geradeaus, gezogen wird wie bei einem Bogen
-  (`minecraft:shooter` mit `scale_power_by_draw_duration`).
-- Treffer verursachen Schaden mit der Ursache `sonicBoom` — der ignoriert Ruestung
-  und Schild, genau wie beim Warden.
+- Verhaelt sich wie ein echter Bogen (halten = ziehen, loslassen = schiessen,
+  Kraft skaliert mit Ziehdauer), nicht wie eine Armbrust.
+- Zug-Animation: Bogen-Icon und -Modell wechseln beim Ziehen durch 4 Stufen
+  (Ruhe + 3 Zugstufen), exakt nach dem Schema von Vanillas eigenem
+  `bow.json`/`bow.render_controllers.json` (Attachable + Render Controller,
+  Auswahl per `query.get_animation_frame`) — nur mit blau eingefaerbtem Griff
+  in allen 4 Texturen. Siehe `packs/resource_pack/attachables/sonic_bow.json`.
+- Das Geschoss ist ein sichtbarer Pfeil (Holzschaft, Befiederung, blaue
+  Spitze) und wird auf dem gesamten Flug von Wardens echtem
+  `minecraft:sonic_explosion`-Partikel umhuellt (kein eigenes Partikel-Asset).
+- Treffer verursachen Schaden mit der Ursache `sonicBoom` — der ignoriert
+  Ruestung und Schild, genau wie beim Warden.
+- Reichweite: Der Boom fliegt bis zu 50 Bloecke weit (script-seitig per
+  zurueckgelegter Distanz getrackt, unabhaengig von der tatsaechlichen
+  Projektilgeschwindigkeit) und loest sich dann von selbst auf, sofern er
+  vorher nichts trifft.
 - Ein Schuss durchschlaegt bis zu 4 Gegner und detoniert danach bzw. beim
-  Blocktreffer zu einer Druckwelle mit Flaechenschaden und Knockback.
-- Optik: eigene Partikel `myaddon:sonic_ring` (Flugbahn) und `myaddon:sonic_impact`
-  (Einschlag), Sounds `warden.sonic_charge` / `warden.sonic_boom`.
-- Alle Werte (Schaden, Radius, Knockback, Durchschlag) stehen in
+  Blocktreffer oder am Ende der Reichweite zu einer Druckwelle mit
+  Flaechenschaden und Knockback.
+- Sounds sind Wardens echte Events: `mob.warden.sonic_charge` beim Abschuss,
+  `mob.warden.sonic_boom` bei der Detonation.
+- Alle Werte (Schaden, Radius, Knockback, Durchschlag, Reichweite) stehen in
   `SonicBowConfig` in `src/config.ts`.
 
 ## Projektstruktur

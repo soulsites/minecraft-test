@@ -10,9 +10,13 @@ export const Identifiers = {
   sonicBoom: `${NAMESPACE}:sonic_boom`,
 } as const;
 
-export const Particles = {
-  sonicTrail: `${NAMESPACE}:sonic_ring`,
-  sonicImpact: `${NAMESPACE}:sonic_impact`,
+/** The warden's own sonic boom particle - real vanilla content, not a custom one. */
+export const SONIC_EXPLOSION_PARTICLE = "minecraft:sonic_explosion";
+
+/** The warden's own sonic boom / charge sound events. */
+export const WardenSounds = {
+  charge: "mob.warden.sonic_charge",
+  boom: "mob.warden.sonic_boom",
 } as const;
 
 export const FrostWandConfig = {
@@ -47,4 +51,6 @@ export const SonicBowConfig = {
   maxPierce: 4,
   /** Durability spent per shot. */
   durabilityCostPerShot: 1,
+  /** The shockwave dissipates on its own after travelling this far. */
+  maxTravelDistance: 50,
 } as const;
