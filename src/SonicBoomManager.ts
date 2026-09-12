@@ -6,13 +6,15 @@ import {
   world,
   type Dimension,
   type Entity,
-  type EntitySpawnAfterEvent,
   type ProjectileHitBlockAfterEvent,
   type ProjectileHitEntityAfterEvent,
   type Vector2,
   type Vector3,
 } from "@minecraft/server";
 import { Identifiers, SONIC_EXPLOSION_PARTICLE, SonicBowConfig, WardenSounds } from "./config";
+
+/** All dimensions the shot-discovery scan below has to cover. */
+const DIMENSION_IDS = ["overworld", "nether", "the_end"] as const;
 
 /** Per-shot state of one flying sonic boom. */
 interface Shot {
@@ -34,32 +36,44 @@ interface Shot {
  * - detonates into a knockback shockwave on block impact, or once it has
  *   travelled `maxTravelDistance` blocks without hitting anything
  * - charges the bow one point of durability per shot
+ *
+ * Shots are discovered by polling for `myaddon:sonic_boom` entities once a
+ * tick instead of subscribing to `world.afterEvents.entitySpawn` - that event
+ * has no type filter and fires for *every* entity spawning anywhere in the
+ * world (mob farms, dropped items, XP orbs, ...), which meant a script
+ * callback ran on every single one of those just to throw almost all of them
+ * away. `getEntities({ type })` is filtered natively and only ever returns
+ * our own projectiles.
  */
 export class SonicBoomManager {
   private readonly shots = new Map<string, Shot>();
 
   public register(): void {
-    world.afterEvents.entitySpawn.subscribe(this.onEntitySpawn);
     world.afterEvents.projectileHitEntity.subscribe(this.onHitEntity);
     world.afterEvents.projectileHitBlock.subscribe(this.onHitBlock);
     system.runInterval(() => this.tick(), 1);
   }
 
-  private onEntitySpawn = (event: EntitySpawnAfterEvent): void => {
-    const projectile = event.entity;
-    if (projectile.typeId !== Identifiers.sonicBoom) return;
+  /** Picks up any `myaddon:sonic_boom` that appeared since the last tick. */
+  private discoverNewShots(): void {
+    for (const dimensionId of DIMENSION_IDS) {
+      const dimension = world.getDimension(dimensionId);
+      for (const projectile of dimension.getEntities({ type: Identifiers.sonicBoom })) {
+        if (this.shots.has(projectile.id)) continue;
 
-    this.shots.set(projectile.id, {
-      projectile,
-      hitEntityIds: new Set(),
-      lastLocation: projectile.location,
-      traveledDistance: 0,
-      ticksSinceTrail: 0,
-    });
+        this.shots.set(projectile.id, {
+          projectile,
+          hitEntityIds: new Set(),
+          lastLocation: projectile.location,
+          traveledDistance: 0,
+          ticksSinceTrail: 0,
+        });
 
-    const shooter = this.ownerOf(projectile);
-    if (shooter instanceof Player) this.chargeBow(shooter);
-  };
+        const shooter = this.ownerOf(projectile);
+        if (shooter instanceof Player) this.chargeBow(shooter);
+      }
+    }
+  }
 
   /**
    * Advances every shot still in the air: forces its model to face its
@@ -68,6 +82,8 @@ export class SonicBoomManager {
    * hitting anything, lets the shockwave dissipate there.
    */
   private tick(): void {
+    this.discoverNewShots();
+
     for (const [id, shot] of this.shots) {
       if (!shot.projectile.isValid) {
         this.shots.delete(id);

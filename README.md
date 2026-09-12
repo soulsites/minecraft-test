@@ -125,6 +125,13 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
   `mob.warden.sonic_boom` bei der Detonation.
 - Alle Werte (Schaden, Radius, Knockback, Durchschlag, Reichweite) stehen in
   `SonicBowConfig` in `src/config.ts`.
+- Schuss-Erkennung: neue `myaddon:sonic_boom`-Projektile werden per
+  getyptem `getEntities({ type })`-Scan einmal pro Tick gefunden, nicht ueber
+  `world.afterEvents.entitySpawn`. Dieses Event hat keinen Typ-Filter und
+  feuert fuer *jede* Entity, die irgendwo in der Welt spawnt (Mobfarmen,
+  gedroppte Items, XP-Orbs, ...) — dauerhafte, spuerbare Lag, unabhaengig
+  davon, ob ueberhaupt geschossen wird. Siehe
+  `SonicBoomManager.discoverNewShots`.
 
 ## Projektstruktur
 
