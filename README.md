@@ -13,7 +13,7 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
 | Entity | `myaddon:frost_golem`  | Feindlicher Mob mit eigenem Modell, Spawn-Regeln in kalten Biomen und Enrage-Phase unter 50 % Leben |
 | Item   | `myaddon:sonic_bow`    | Schallbogen: verschiesst statt Pfeilen den Sonic Boom des Wardens |
 | Item   | `myaddon:echo_charge`  | Munition des Schallbogens |
-| Entity | `myaddon:sonic_boom`   | Sichtbarer Pfeil, umhuellt vom echten Sonic-Boom-Partikel des Wardens |
+| Entity | `myaddon:sonic_boom`   | Unsichtbares Projektil (kein Pfeilmodell), nur der echte Sonic-Boom-Partikel des Wardens ist sichtbar |
 | Item   | `myaddon:warden_ingot` | Craftingmaterial aus einem Echosplitter, Zutat fuer den Schallbogen |
 | Item   | `myaddon:warden_hammer`| "Hammer": Schmiede-Werkzeug (Schmiedetisch) und zugleich Werkzeug fuer das eigene Amboss-Menue (siehe unten) |
 
