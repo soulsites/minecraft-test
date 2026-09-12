@@ -86,20 +86,16 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
   sobald `max_draw_duration` erreicht ist; ohne die Klemme wurde das als Reset
   sichtbar). Nur `!query.is_using_item` setzt auf 0 zurueck, wenn man loslaesst.
   Siehe `packs/resource_pack/attachables/sonic_bow.json`.
-- Fadenkreuz: Das native Touch-Ziel-Reticle, das beim Ziehen eines *echten*
-  Vanilla-Bogens automatisch erscheint, ist in keiner Resource-Pack-Datei
-  data-getrieben (`hud_screen.json` hat dafuer keinerlei Bindung) und scheint
-  hart an die Vanilla-Item-ID gekoppelt zu sein. Als echter Grafik-Ersatz gibt
-  es jetzt `packs/resource_pack/ui/hud_screen.json`: eine minimale, additive
-  Erweiterung von Vanillas eigenem `hud_screen.json` (`"modifications"` haengt
-  ein zusaetzliches Element an `root_panel/controls` an, ohne etwas
-  Bestehendes zu ersetzen), die einen 2x2 Pixel grossen, blauen Punkt
-  (`textures/ui/sonic_bow_crosshair.png`) exakt in die Bildschirmmitte setzt
-  (`anchor_from`/`anchor_to: "center"`) — kein Text, also auch keine
-  Schriftkontur mehr. **Einschraenkung:** Die JSON-UI-Bindings sind auf eine
-  feste Namensliste (`#hud_...`) beschraenkt, es gibt keine Bindung fuer
-  "Spieler zieht gerade einen Bogen" — der Punkt ist deshalb technisch bedingt
-  immer sichtbar, nicht nur waehrend des Ziehens.
+- Fadenkreuz: Es gab hier zwischenzeitlich einen eigenen 2x2-Pixel-Punkt per
+  `hud_screen.json`-Modifikation als Ersatz fuer das fehlende native
+  Bogen-Reticle. Diese Datei war die einzige Resource-Pack-Komponente, die
+  wirklich *staendig, fuer jeden Spieler, jeden Frame* aktiv war (die HUD wird
+  immer gerendert, unabhaengig davon ob man etwas haelt) — und wurde als
+  wahrscheinliche Ursache eines dauerhaften, nicht mit dem Schallbogen
+  zusammenhaengenden Lags identifiziert und deshalb wieder entfernt. Kein
+  Fadenkreuz-Ersatz mehr; das ist der Preis dafuer, dass Bedrocks natives
+  Bogen-Reticle hart an die Vanilla-Item-ID gekoppelt ist und sich fuer ein
+  eigenes Item nicht aktivieren laesst.
 - Das Geschoss ist ein sichtbarer Pfeil (Holzschaft, Befiederung, blaue
   Spitze), fliegt schwerelos und **erzwungen komplett gerade**: die Ausrichtung
   wird jeden Tick per Skript direkt aus der tatsaechlichen Geschwindigkeit

@@ -291,13 +291,6 @@ function bowArrowNock() {
   return c;
 }
 
-/** A solid 2x2 blue dot - the crosshair overlay added to hud_screen.json. */
-function crosshairDot() {
-  const c = new Canvas(2, 2);
-  c.rect(0, 0, 2, 2, BLUE_TIP);
-  return c;
-}
-
 /**
  * Every non-transparent pixel as [x, y, r, g, b], read directly off the
  * user's own reference screenshot (a dark-blue lumpy nugget), the same way
@@ -357,7 +350,6 @@ function wardenHammer() {
 }
 
 const OUTPUTS = {
-  "packs/resource_pack/textures/ui/sonic_bow_crosshair.png": crosshairDot,
   "packs/resource_pack/textures/items/warden_ingot.png": wardenIngot,
   "packs/resource_pack/textures/items/warden_hammer.png": wardenHammer,
   "packs/resource_pack/textures/items/frost_shard.png": frostShard,
