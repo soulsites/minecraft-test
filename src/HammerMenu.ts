@@ -17,6 +17,11 @@ export class HammerMenu {
       if (event.itemStack?.typeId !== Identifiers.wardenHammer) return;
 
       event.cancel = true;
+      // Bedrock re-fires this event every tick the interact button is held,
+      // not just once - without this check, holding it open (or spamming on
+      // a laggy connection) would stack up multiple menus for the same click.
+      if (!event.isFirstEvent) return;
+
       const player = event.player;
       system.run(() => this.openMenu(player));
     });
@@ -29,6 +34,9 @@ export class HammerMenu {
     form.show(player).then((response) => {
       if (response.canceled || response.selection === undefined) return;
       this.craft(player, HammerRecipes[response.selection]);
+    }).catch(() => {
+      // Player left, disconnected, or the form was dismissed by another UI -
+      // nothing to craft, nothing to report.
     });
   }
 
