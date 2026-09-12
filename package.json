@@ -1,6 +1,6 @@
 {
   "name": "frost-addon",
-  "version": "1.0.25",
+  "version": "1.0.26",
   "private": true,
   "description": "Minecraft Bedrock addon: frost items, blocks, a custom mob and Script API gameplay.",
   "type": "module",
@@ -14,6 +14,7 @@
   },
   "devDependencies": {
     "@minecraft/server": "2.0.0",
+    "@minecraft/server-ui": "2.0.0",
     "esbuild": "^0.28.2",
     "typescript": "^5.9.0"
   }

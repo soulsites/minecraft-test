@@ -15,7 +15,7 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
 | Item   | `myaddon:echo_charge`  | Munition des Schallbogens |
 | Entity | `myaddon:sonic_boom`   | Sichtbarer Pfeil, umhuellt vom echten Sonic-Boom-Partikel des Wardens |
 | Item   | `myaddon:warden_ingot` | Craftingmaterial aus einem Echosplitter, Zutat fuer den Schallbogen |
-| Item   | `myaddon:warden_hammer`| Schmiede-Werkzeug, noetig um am Schmiedetisch aus einem Bogen einen Schallbogen zu machen |
+| Item   | `myaddon:warden_hammer`| "Hammer": Schmiede-Werkzeug (Schmiedetisch) und zugleich Werkzeug fuer das eigene Amboss-Menue (siehe unten) |
 
 ### Beschaffung
 
@@ -45,11 +45,26 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
   macht, z. B. beim Netherit-Upgrade) legt man `myaddon:warden_hammer` als
   Template, einen ganz normalen `minecraft:bow` als Basis und
   `myaddon:warden_ingot` als Zusatz ein und erhaelt `myaddon:sonic_bow`. Der
-  Hammer wird dabei wie ein normales Schmiedetisch-Template verbraucht (dafuer
-  ist er billig genug, um sich mehrere auf Vorrat zu craften) — ein
-  wiederverwendbares Werkzeug dafuer laesst sich in Bedrock nicht abbilden,
-  da Schmiedetisch-Rezepte immer alle drei Slots verbrauchen. Siehe
+  Hammer wird dabei wie ein normales Schmiedetisch-Template verbraucht. Siehe
   `packs/behavior_pack/recipes/sonic_bow_upgrade.json`.
+- **Hammer-Menue am Amboss**: haelt man den Hammer in der Hand und
+  rechtsklickt einen Amboss, oeffnet sich statt der normalen
+  Umbenennen/Reparieren/Verzaubern-UI ein eigenes Menue namens "Hammer" mit
+  genau zwei Knoepfen:
+  - Schallbogen: 1x `minecraft:bow` + 1x `myaddon:warden_ingot` →
+    1x `myaddon:sonic_bow`
+  - Echoladung: 1x `minecraft:arrow` + 1x `minecraft:echo_shard` →
+    1x `myaddon:echo_charge`
+
+  Fehlen die Zutaten im Inventar, passiert nichts (Hinweis im Chat); sonst
+  werden sie sofort getauscht. Der Hammer selbst wird dabei **nicht**
+  verbraucht — er bleibt als wiederverwendbares Werkzeug in der Hand.
+  Technischer Hintergrund: Bedrocks Amboss hat eine fest codierte UI, die
+  sich nicht durch ein echtes Item-Slot-Gitter ersetzen laesst (auch nicht
+  per Script API) — dieses Knopf-Menue ist die naechstmoegliche Annaeherung
+  und bietet bewusst nur diese zwei Rezepte an, nichts sonst. Ohne Hammer in
+  der Hand verhaelt sich der Amboss weiterhin ganz normal. Siehe
+  `src/HammerMenu.ts` und `src/config.ts` (`HammerRecipes`).
 
 ### Schallbogen im Detail
 

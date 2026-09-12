@@ -2,6 +2,7 @@ import { system } from "@minecraft/server";
 import { FrostOreComponent } from "./components/FrostOreComponent";
 import { FrostWandComponent } from "./components/FrostWandComponent";
 import { FrostGolemManager } from "./FrostGolemManager";
+import { HammerMenu } from "./HammerMenu";
 import { SonicBoomManager } from "./SonicBoomManager";
 
 /**
@@ -11,6 +12,7 @@ import { SonicBoomManager } from "./SonicBoomManager";
 class Addon {
   private readonly golems = new FrostGolemManager();
   private readonly sonicBooms = new SonicBoomManager();
+  private readonly hammerMenu = new HammerMenu();
 
   public start(): void {
     system.beforeEvents.startup.subscribe((event) => {
@@ -26,6 +28,7 @@ class Addon {
 
     this.golems.register();
     this.sonicBooms.register();
+    this.hammerMenu.register();
   }
 }
 
