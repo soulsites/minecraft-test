@@ -7,7 +7,7 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
 
 | Typ    | Identifier             | Beschreibung |
 | ------ | ---------------------- | ------------ |
-| Item   | `myaddon:frost_wand`   | Froststab: friert bei Benutzung alle Mobs im Umkreis ein (Slowness + Frostschaden), Cooldown und Haltbarkeitsverbrauch per Skript |
+| Item   | `myaddon:frost_sword`  | Frostschwert: normales Schwert (Netherit-Werte), das getroffene Ziele (Mobs und Spieler) an Ort und Stelle einfrieren laesst |
 | Item   | `myaddon:frost_shard`  | Craftingmaterial, Drop von Erz und Golem |
 | Block  | `myaddon:frost_ore`    | Erz mit eigener Loot Table, leichtem Leuchten und Skript-Effekt beim Abbau |
 | Entity | `myaddon:frost_golem`  | Feindlicher Mob, Form + Textur der echten Kupfergolem-Vorlage (blau eingefaerbt), spawnt nur in Schneebiomen, greift mit nach vorn gestreckten Armen an, Enrage-Phase unter 50 % Leben |
@@ -45,6 +45,37 @@ wie `warden_hammer.png`/`warden_ingot.png`.
   Animation `animation.frost_golem.attack` fragt sie per
   `query.property('myaddon:attacking')` ab.
 
+### Frostschwert im Detail
+
+- Statt einer aktiven Faehigkeit (Benutzen/Rechtsklick) wirkt es jetzt beim
+  **Treffer im Nahkampf** — sowohl gegen Mobs als auch gegen Spieler:
+  - starkes Slowness (Amplifier `slownessAmplifier`, `src/config.ts`) fuer
+    `freezeDurationTicks` (Standard 100 Ticks = 5s), das die Bewegungs-
+    geschwindigkeit praktisch auf 0 druecken sollte
+  - zusaetzlich `clearVelocity()` jeden Tick waehrend des Einfrierens, damit
+    auch schon vorhandener Schwung/Knockback sofort gestoppt wird (Slowness
+    allein bremst nur zukuenftige Eingaben, keine laufende Bewegung)
+  - ein Ring aus Schneeflocken-Partikeln um das Ziel als "eingefrorene"
+    Optik, alle `particleIntervalTicks` (5) Ticks statt jeden Tick — gleiche
+    Drossel-Logik wie beim Schallbogen-Trail, aus genau demselben Grund
+    (echtes, spuerbares Lag durch zu haeufige Partikel weiter oben in diesem
+    Projekt).
+  - **Einschraenkung:** Bedrock kann kein echtes Eisblock-Mesh auf eine
+    beliebige, bereits existierende Entity legen (Attachables funktionieren
+    nur fuer eigene, ausgeruestete Items des Traegers selbst) — der
+    Partikel-Ring ist die naechstmoegliche Annaeherung an "wirkt umhuellt
+    von einer Eisschicht", kein echter Eiskaefig.
+  - erneuter Treffer waehrend des Einfrierens verlaengert die Dauer neu,
+    statt sich zu addieren.
+  - kostet wie gehabt 1 Haltbarkeitspunkt pro Treffer, zerbricht bei voller
+    Abnutzung. Siehe `src/FrostSwordManager.ts`.
+- Werte (Haltbarkeit 2031, Schaden 8, Verzauberbarkeit Slot `sword`) sind an
+  den echten Netherit-Schwert angeglichen.
+- Aussehen: Vanillas eigene `netherite_sword.png`, pixelidentisch in
+  Form/Schattierung, per Helligkeit auf die Eis-Blau-Palette umgefaerbt
+  (wie schon bei `frost_golem.png`) — daher auch nicht mehr Teil von
+  `npm run textures`, sondern eine statische Datei.
+
 ### Frost-Erz: Vorkommen
 
 `myaddon:frost_ore` generiert jetzt natuerlich (`features/frost_ore_feature.json`
@@ -58,6 +89,16 @@ verifizierte 1:1-Kopie der echten Drop-Rate.
 
 ### Beschaffung
 
+- **Frostschwert** (`myaddon:frost_sword`): am Crafting-Tisch, 3x3-Muster —
+  1x `minecraft:netherite_sword` in der Mitte, ringsherum 8x
+  `myaddon:frost_shard`:
+  ```
+  S S S
+  S N S
+  S S S
+  ```
+  (`S` = Eissplitter, `N` = Netherit-Schwert). Siehe
+  `packs/behavior_pack/recipes/frost_sword.json`.
 - **Echo-Ladung** (Munition): 4x `minecraft:arrow` + 1x `minecraft:echo_shard`
   am Crafting-Tisch ergibt 4x `myaddon:echo_charge`.
 - **Warden-Barren**: am Crafting-Tisch, 3x3-Muster — 1x `minecraft:echo_shard`
@@ -225,7 +266,7 @@ beim Packaging, also genau dann, wenn eine neue Datei zum Testen entsteht.
    Skriptmodul nicht.
 4. Test im Spiel:
    ```
-   /give @s myaddon:frost_wand
+   /give @s myaddon:frost_sword
    /setblock ~ ~ ~1 myaddon:frost_ore
    /summon myaddon:frost_golem
    /give @s myaddon:echo_charge 16

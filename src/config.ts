@@ -1,7 +1,7 @@
 export const NAMESPACE = "myaddon";
 
 export const Identifiers = {
-  frostWand: `${NAMESPACE}:frost_wand`,
+  frostSword: `${NAMESPACE}:frost_sword`,
   frostShard: `${NAMESPACE}:frost_shard`,
   frostOre: `${NAMESPACE}:frost_ore`,
   frostGolem: `${NAMESPACE}:frost_golem`,
@@ -21,15 +21,26 @@ export const WardenSounds = {
   boom: "mob.warden.sonic_boom",
 } as const;
 
-export const FrostWandConfig = {
-  /** Radius in blocks affected by one cast. */
-  radius: 4,
-  /** Ticks the slowness effect lasts. */
-  slownessDurationTicks: 120,
-  slownessAmplifier: 2,
-  /** Cooldown between two casts, in ticks. */
-  cooldownTicks: 40,
-  durabilityCostPerCast: 1,
+export const FrostSwordConfig = {
+  /** How long a hit target stays frozen, in ticks. */
+  freezeDurationTicks: 100,
+  /**
+   * Slowness amplifier applied for the duration. Speed scales down by
+   * (1 - 0.15 * amplifier), which already floors at 0 well before this -
+   * kept high for headroom against enchantments/effects that might
+   * otherwise counteract it. `clearVelocity()` on top handles the part
+   * slowness alone doesn't cover: knockback/momentum already in flight.
+   */
+  slownessAmplifier: 10,
+  /**
+   * The icy "shell" is drawn as a ring of particles around the target,
+   * refreshed every N ticks rather than every tick - the same throttling
+   * SonicBoomManager uses for its trail, for the same reason (a particle
+   * ring redrawn 20x/sec per frozen target is exactly the kind of thing
+   * that caused real, measurable lag earlier in this addon).
+   */
+  particleIntervalTicks: 5,
+  durabilityCostPerHit: 1,
 } as const;
 
 export const FrostGolemConfig = {

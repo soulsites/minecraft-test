@@ -1,7 +1,7 @@
 import { system } from "@minecraft/server";
 import { FrostOreComponent } from "./components/FrostOreComponent";
-import { FrostWandComponent } from "./components/FrostWandComponent";
 import { FrostGolemManager } from "./FrostGolemManager";
+import { FrostSwordManager } from "./FrostSwordManager";
 import { SonicBoomManager } from "./SonicBoomManager";
 
 /**
@@ -11,13 +11,10 @@ import { SonicBoomManager } from "./SonicBoomManager";
 class Addon {
   private readonly golems = new FrostGolemManager();
   private readonly sonicBooms = new SonicBoomManager();
+  private readonly frostSword = new FrostSwordManager();
 
   public start(): void {
     system.beforeEvents.startup.subscribe((event) => {
-      event.itemComponentRegistry.registerCustomComponent(
-        FrostWandComponent.componentId,
-        new FrostWandComponent(),
-      );
       event.blockComponentRegistry.registerCustomComponent(
         FrostOreComponent.componentId,
         new FrostOreComponent(),
@@ -26,6 +23,7 @@ class Addon {
 
     this.golems.register();
     this.sonicBooms.register();
+    this.frostSword.register();
   }
 }
 

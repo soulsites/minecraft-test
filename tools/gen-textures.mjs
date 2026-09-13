@@ -92,7 +92,6 @@ const ICE = [143, 205, 232];
 const ICE_DARK = [88, 148, 184];
 const STONE = [128, 128, 128];
 const STONE_DARK = [104, 104, 104];
-const WOOD = [107, 78, 48];
 const ARROW_SHAFT = [171, 137, 92];
 const ARROW_SHAFT_DARK = [130, 100, 64];
 const FLETCHING = [235, 235, 235];
@@ -167,16 +166,12 @@ function frostShard() {
   return c;
 }
 
-function frostWand() {
-  const c = new Canvas(16, 16);
-  c.rect(0, 0, 16, 16, CLEAR);
-  for (let i = 0; i < 10; i++) c.rect(4 + i, 11 - i, 2, 2, WOOD);
-  c.rect(10, 2, 4, 4, ICE);
-  c.rect(11, 3, 2, 2, ICE_LIGHT);
-  c.set(9, 6, ICE_DARK);
-  c.set(14, 1, ICE_LIGHT);
-  return c;
-}
+/**
+ * frost_sword.png is no longer generated here: like frost_golem.png, it's
+ * vanilla's own netherite_sword.png, pixel-for-pixel, with every pixel's
+ * hue remapped from netherite's grey/purple to the addon's icy blue
+ * (ICE_DARK..ICE_LIGHT) by luminance. Checked in as a static asset.
+ */
 
 function frostOre() {
   const c = new Canvas(16, 16);
@@ -349,7 +344,6 @@ const OUTPUTS = {
   "packs/resource_pack/textures/items/warden_ingot.png": wardenIngot,
   "packs/resource_pack/textures/items/warden_hammer.png": wardenHammer,
   "packs/resource_pack/textures/items/frost_shard.png": frostShard,
-  "packs/resource_pack/textures/items/frost_wand.png": frostWand,
   "packs/resource_pack/textures/blocks/frost_ore.png": frostOre,
   "packs/resource_pack/textures/items/sonic_bow.png": sonicBow,
   "packs/resource_pack/textures/items/sonic_bow_pulling_0.png": () => sonicBowPulling(0),
