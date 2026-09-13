@@ -5,7 +5,14 @@
       "identifier": "myaddon:frost_golem",
       "is_spawnable": true,
       "is_summonable": true,
-      "runtime_identifier": "minecraft:zombie"
+      "runtime_identifier": "minecraft:zombie",
+      "properties": {
+        "myaddon:attacking": {
+          "client_sync": true,
+          "type": "bool",
+          "default": false
+        }
+      }
     },
     "component_groups": {
       "myaddon:enraged": {

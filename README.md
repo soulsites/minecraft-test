@@ -10,7 +10,7 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
 | Item   | `myaddon:frost_wand`   | Froststab: friert bei Benutzung alle Mobs im Umkreis ein (Slowness + Frostschaden), Cooldown und Haltbarkeitsverbrauch per Skript |
 | Item   | `myaddon:frost_shard`  | Craftingmaterial, Drop von Erz und Golem |
 | Block  | `myaddon:frost_ore`    | Erz mit eigener Loot Table, leichtem Leuchten und Skript-Effekt beim Abbau |
-| Entity | `myaddon:frost_golem`  | Feindlicher Mob, Form + Textur der echten Kupfergolem-Vorlage (blau eingefaerbt), Spawn-Regeln in kalten Biomen und Enrage-Phase unter 50 % Leben |
+| Entity | `myaddon:frost_golem`  | Feindlicher Mob, Form + Textur der echten Kupfergolem-Vorlage (blau eingefaerbt), spawnt nur in Schneebiomen, greift mit nach vorn gestreckten Armen an, Enrage-Phase unter 50 % Leben |
 | Item   | `myaddon:sonic_bow`    | Schallbogen: verschiesst statt Pfeilen den Sonic Boom des Wardens |
 | Item   | `myaddon:echo_charge`  | Munition des Schallbogens |
 | Entity | `myaddon:sonic_boom`   | Unsichtbares Projektil (kein Pfeilmodell), nur der echte Sonic-Boom-Partikel des Wardens ist sichtbar |
@@ -28,6 +28,33 @@ Kupfer-Orange auf das Eis-Blau der Addon-Palette (`ICE_DARK` .. `ICE_LIGHT`
 in `tools/gen-textures.mjs`) umgefaerbt. Deshalb wird `frost_golem.png`
 nicht mehr von `npm run textures` erzeugt — sie ist eine statische Datei
 wie `warden_hammer.png`/`warden_ingot.png`.
+
+- **Spawn**: nur noch in Schneebiomen (`has_biome_tag == "frozen"`, wie
+  Polarbaer/Stray in Vanilla — nicht das breitere `"cold"`, das z. B. auch
+  Taiga einschliesst), nicht in Ozean-Varianten. Siehe
+  `packs/behavior_pack/spawn_rules/frost_golem.json`.
+- **Angriff**: haelt beim Zuschlagen kurz beide Arme nach vorne, wie ein
+  Eisengolem. Eisengolems steuern das intern ueber
+  `variable.attack_animation_tick`, eine engine-interne Variable, die nur
+  fuer den echten Iron Golem existiert und fuer eigene Entities nicht
+  verfuegbar ist. Nachgebaut mit einer eigenen Entity Property
+  (`myaddon:attacking`, `description.properties` in `frost_golem.json`,
+  siehe auch der echte `copper_golem.json` fuer das Format) — ein Skript
+  (`FrostGolemManager.onEntityHitEntity`) setzt sie beim Treffer kurz auf
+  `true` und nach `attackPoseTicks` wieder auf `false`; die Resource-Pack-
+  Animation `animation.frost_golem.attack` fragt sie per
+  `query.property('myaddon:attacking')` ab.
+
+### Frost-Erz: Vorkommen
+
+`myaddon:frost_ore` generiert jetzt natuerlich (`features/frost_ore_feature.json`
++ `feature_rules/frost_ore_feature_rules.json`), aber bewusst selten
+gehalten (kleine Ader, ein Versuch pro Chunk, schmales Hoehenband, nur in
+Schneebiomen) — angelehnt an die Seltenheit von Antikem Schrott. Mojangs
+echte Antiker-Schrott-Werte liegen nicht offen einsehbar vor (die
+`bedrock-samples`-Rezept-/Feature-Dateien dafuer waren beim Schreiben nicht
+erreichbar), es ist also eine bewusst knapp bemessene Annaeherung, keine
+verifizierte 1:1-Kopie der echten Drop-Rate.
 
 ### Beschaffung
 

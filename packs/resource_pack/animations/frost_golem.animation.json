@@ -17,6 +17,13 @@
           "rotation": ["query.target_x_rotation", "query.target_y_rotation", 0]
         }
       }
+    },
+    "animation.frost_golem.attack": {
+      "loop": true,
+      "bones": {
+        "left_arm": { "rotation": [-100, 0, 0] },
+        "right_arm": { "rotation": [-100, 0, 0] }
+      }
     }
   }
 }

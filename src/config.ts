@@ -37,6 +37,10 @@ export const FrostGolemConfig = {
   enrageHealthRatio: 0.5,
   enrageEventName: `${NAMESPACE}:enrage`,
   calmEventName: `${NAMESPACE}:calm`,
+  /** Custom entity property driving the arms-forward attack pose. */
+  attackingPropertyId: "myaddon:attacking",
+  /** How long the arms-forward pose holds after a melee hit lands, in ticks. */
+  attackPoseTicks: 10,
 } as const;
 
 export const SonicBowConfig = {

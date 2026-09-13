@@ -9,12 +9,14 @@
       "render_controllers": ["controller.render.frost_golem"],
       "animations": {
         "walk": "animation.frost_golem.walk",
-        "look_at_target": "animation.frost_golem.look_at_target"
+        "look_at_target": "animation.frost_golem.look_at_target",
+        "attack": "animation.frost_golem.attack"
       },
       "scripts": {
         "animate": [
           { "walk": "query.modified_move_speed > 0.05" },
-          "look_at_target"
+          "look_at_target",
+          { "attack": "query.property('myaddon:attacking')" }
         ]
       },
       "spawn_egg": { "base_color": "#B9E6F2", "overlay_color": "#2E6B8A" }

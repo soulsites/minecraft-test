@@ -12,11 +12,10 @@
         "minecraft:difficulty_filter": { "min": "easy", "max": "hard" },
         "minecraft:weight": { "default": 20 },
         "minecraft:herd": { "min_size": 1, "max_size": 2 },
-        "minecraft:biome_filter": {
-          "test": "has_biome_tag",
-          "operator": "==",
-          "value": "cold"
-        }
+        "minecraft:biome_filter": [
+          { "test": "has_biome_tag", "operator": "==", "value": "frozen" },
+          { "test": "has_biome_tag", "operator": "!=", "value": "ocean" }
+        ]
       }
     ]
   }

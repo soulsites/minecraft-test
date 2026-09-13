@@ -1,0 +1,18 @@
+{
+  "format_version": "1.13.0",
+  "minecraft:ore_feature": {
+    "description": {
+      "identifier": "myaddon:frost_ore_feature"
+    },
+    "count": 2,
+    "replace_rules": [
+      {
+        "places_block": { "name": "myaddon:frost_ore" },
+        "may_replace": [
+          { "name": "minecraft:stone" },
+          { "name": "minecraft:deepslate" }
+        ]
+      }
+    ]
+  }
+}
