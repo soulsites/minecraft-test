@@ -25,12 +25,19 @@ interface FrozenTarget {
  * Drives `myaddon:frost_sword`: hitting a mob or player with it in hand
  * freezes the target for `freezeDurationTicks` - not rooted in place, but
  * sliding around like it's standing on ice (frictionless), unable to jump,
- * and unable to slide off a ledge. One freeze per wielder per
- * `cooldownTicks`.
+ * and unable to slide off a ledge. The cooldown is per *target*, not per
+ * wielder: hitting the same zombie again right after does nothing until
+ * `cooldownTicks` pass, but a different zombie (or any other target) can be
+ * frozen immediately regardless of when it was last used.
  */
 export class FrostSwordManager {
   private readonly frozen = new Map<string, FrozenTarget>();
-  /** Player id -> tick at which the ability may trigger again. */
+  /**
+   * Target entity id -> tick at which that target can be frozen again.
+   * Entries are never purged (only ever a few bytes each, bounded by how
+   * many distinct entities were ever hit this session) - not worth the
+   * bookkeeping to clean up.
+   */
   private readonly readyAtTick = new Map<string, number>();
 
   public register(): void {
@@ -44,19 +51,21 @@ export class FrostSwordManager {
 
     const weapon = attacker.getComponent("minecraft:equippable")?.getEquipment(EquipmentSlot.Mainhand);
     if (weapon?.typeId !== Identifiers.frostSword) return;
-    if (this.isOnCooldown(attacker)) return;
 
-    this.startCooldown(attacker);
-    this.freeze(event.hitEntity);
+    const target = event.hitEntity;
+    if (this.isOnCooldown(target)) return;
+
+    this.startCooldown(target);
+    this.freeze(target);
     this.chargeSword(attacker, weapon);
   };
 
-  private isOnCooldown(player: Player): boolean {
-    return system.currentTick < (this.readyAtTick.get(player.id) ?? 0);
+  private isOnCooldown(target: Entity): boolean {
+    return system.currentTick < (this.readyAtTick.get(target.id) ?? 0);
   }
 
-  private startCooldown(player: Player): void {
-    this.readyAtTick.set(player.id, system.currentTick + FrostSwordConfig.cooldownTicks);
+  private startCooldown(target: Entity): void {
+    this.readyAtTick.set(target.id, system.currentTick + FrostSwordConfig.cooldownTicks);
   }
 
   private freeze(target: Entity): void {

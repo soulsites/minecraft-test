@@ -70,17 +70,22 @@ wie `warden_hammer.png`/`warden_ingot.png`.
     genau demselben Grund (echtes, spuerbares Lag durch zu haeufige
     Partikel weiter oben in diesem Projekt).
   - **Einschraenkung, Textur-Faerbung**: Die Textur eines getroffenen Mobs
-    oder Spielers laesst sich damit *nicht* wie gewuenscht hellblau
-    einfaerben — ein Rendercontroller-Overlay funktioniert nur fuer Entities,
-    deren Client-Entity-Datei wir selbst besitzen (z. B. `frost_golem`),
-    nicht fuer beliebige Vanilla-Mobs oder Spieler, und `@minecraft/server`
-    hat keine generische "Entity einfaerben"-Funktion. Der doppelte
-    Partikel-Ring oben ist die Naeherung dafuer. Waere das nur fuer den
-    Frost-Golem gewuenscht (den wir ja selbst besitzen), liesse sich ein
-    echtes Farb-Overlay dort nachruesten — sag Bescheid.
-  - **Cooldown**: nur alle `cooldownTicks` (1200 Ticks = 1 Minute) pro
-    Spieler; ein Treffer waehrend der Cooldown-Zeit macht gar nichts (kein
-    Einfrieren, kein Haltbarkeitsverlust).
+    oder Spielers laesst sich *nicht* hellblau einfaerben. Zwei getrennte
+    Grenzen: Spieler-Skins gehoeren zum Microsoft/Xbox-Konto, kein Bedrock-
+    Add-on kann die je einfaerben (Architektur-Grenze, keine Fleissfrage).
+    Fuer echte Mobs (Zombie usw.) wuerde es bedeuten, deren komplette
+    Verhaltensdatei (KI, Leben, Drops, Baby-Variante, Verhusk-Umwandlung,
+    alles) selbst neu zu schreiben und zu ersetzen — riskant, bricht
+    potenziell mit jedem Minecraft-Update, muesste einzeln pro Mob-Typ
+    gemacht werden. Bewusst nicht umgesetzt (Nutzer-Entscheidung); der
+    doppelte Partikel-Ring bleibt die einzige "eingefrorene" Optik. Fuer
+    den eigenen Frost-Golem (dessen Dateien wir besitzen) waere ein
+    echtes Farb-Overlay separat und risikofrei machbar, falls gewuenscht.
+  - **Cooldown**: pro *getroffenem Ziel*, nicht pro Spieler — dieselbe
+    Kreatur laesst sich erst nach `cooldownTicks` (1200 Ticks = 1 Minute)
+    wieder einfrieren, ein *anderes* Ziel (z. B. ein zweiter Zombie) sofort
+    unabhaengig davon. Ein Treffer auf ein Ziel, das noch auf Cooldown ist,
+    macht gar nichts (kein Einfrieren, kein Haltbarkeitsverlust).
   - erneuter Treffer waehrend des Einfrierens (nach Ablauf des Cooldowns)
     verlaengert die Dauer neu, statt sich zu addieren.
   - kostet 1 Haltbarkeitspunkt pro erfolgreichem (nicht auf Cooldown
