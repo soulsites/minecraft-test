@@ -47,28 +47,45 @@ wie `warden_hammer.png`/`warden_ingot.png`.
 
 ### Frostschwert im Detail
 
-- Statt einer aktiven Faehigkeit (Benutzen/Rechtsklick) wirkt es jetzt beim
-  **Treffer im Nahkampf** — sowohl gegen Mobs als auch gegen Spieler:
-  - starkes Slowness (Amplifier `slownessAmplifier`, `src/config.ts`) fuer
-    `freezeDurationTicks` (Standard 100 Ticks = 5s), das die Bewegungs-
-    geschwindigkeit praktisch auf 0 druecken sollte
-  - zusaetzlich `clearVelocity()` jeden Tick waehrend des Einfrierens, damit
-    auch schon vorhandener Schwung/Knockback sofort gestoppt wird (Slowness
-    allein bremst nur zukuenftige Eingaben, keine laufende Bewegung)
-  - ein Ring aus Schneeflocken-Partikeln um das Ziel als "eingefrorene"
-    Optik, alle `particleIntervalTicks` (5) Ticks statt jeden Tick — gleiche
-    Drossel-Logik wie beim Schallbogen-Trail, aus genau demselben Grund
-    (echtes, spuerbares Lag durch zu haeufige Partikel weiter oben in diesem
-    Projekt).
-  - **Einschraenkung:** Bedrock kann kein echtes Eisblock-Mesh auf eine
-    beliebige, bereits existierende Entity legen (Attachables funktionieren
-    nur fuer eigene, ausgeruestete Items des Traegers selbst) — der
-    Partikel-Ring ist die naechstmoegliche Annaeherung an "wirkt umhuellt
-    von einer Eisschicht", kein echter Eiskaefig.
-  - erneuter Treffer waehrend des Einfrierens verlaengert die Dauer neu,
-    statt sich zu addieren.
-  - kostet wie gehabt 1 Haltbarkeitspunkt pro Treffer, zerbricht bei voller
-    Abnutzung. Siehe `src/FrostSwordManager.ts`.
+- Wirkt beim **Treffer im Nahkampf** — sowohl gegen Mobs als auch gegen
+  Spieler — für `freezeDurationTicks` (60 Ticks = 3s):
+  - Statt komplett bewegungsunfaehig zu sein (fruehere Version), **rutscht**
+    das Ziel jetzt wie auf glattem Eis: jeden Tick wird ein Teil seiner
+    eigenen horizontalen Geschwindigkeit erneut aufaddiert
+    (`slideBoost` in `src/config.ts`), was die normale Bodenreibung
+    ausgleicht. Bedrock hat keine API, um die Reibung eines Bodens fuer nur
+    eine Entity zu aendern — das ist eine geschwindigkeitsbasierte
+    Annaeherung an echtes Eis-Rutschen, keine echte Physik-Simulation.
+  - **Kann nicht hoch**: positive Y-Geschwindigkeit (Springen) wird jeden
+    Tick sofort aufgehoben.
+  - **Kann nicht von einer Kante rutschen**: sobald das Ziel den Boden
+    verliert, nachdem es ihn im selben Einfrier-Zeitraum noch unter sich
+    hatte, wird es exakt auf die letzte Boden-Position zurückgesetzt und
+    die Geschwindigkeit genullt — es rutscht bis an die Kante, aber nicht
+    darueber hinaus. (Wird es bereits in der Luft getroffen, greift der
+    Kantenschutz erst, sobald es das erste Mal wieder landet.)
+  - Ring aus Schneeflocken-Partikeln um Fuesse und Oberkoerper als
+    "eingefrorene" Optik, alle `particleIntervalTicks` (5) Ticks statt
+    jeden Tick — gleiche Drossel-Logik wie beim Schallbogen-Trail, aus
+    genau demselben Grund (echtes, spuerbares Lag durch zu haeufige
+    Partikel weiter oben in diesem Projekt).
+  - **Einschraenkung, Textur-Faerbung**: Die Textur eines getroffenen Mobs
+    oder Spielers laesst sich damit *nicht* wie gewuenscht hellblau
+    einfaerben — ein Rendercontroller-Overlay funktioniert nur fuer Entities,
+    deren Client-Entity-Datei wir selbst besitzen (z. B. `frost_golem`),
+    nicht fuer beliebige Vanilla-Mobs oder Spieler, und `@minecraft/server`
+    hat keine generische "Entity einfaerben"-Funktion. Der doppelte
+    Partikel-Ring oben ist die Naeherung dafuer. Waere das nur fuer den
+    Frost-Golem gewuenscht (den wir ja selbst besitzen), liesse sich ein
+    echtes Farb-Overlay dort nachruesten — sag Bescheid.
+  - **Cooldown**: nur alle `cooldownTicks` (1200 Ticks = 1 Minute) pro
+    Spieler; ein Treffer waehrend der Cooldown-Zeit macht gar nichts (kein
+    Einfrieren, kein Haltbarkeitsverlust).
+  - erneuter Treffer waehrend des Einfrierens (nach Ablauf des Cooldowns)
+    verlaengert die Dauer neu, statt sich zu addieren.
+  - kostet 1 Haltbarkeitspunkt pro erfolgreichem (nicht auf Cooldown
+    liegendem) Treffer, zerbricht bei voller Abnutzung. Siehe
+    `src/FrostSwordManager.ts`.
 - Werte (Haltbarkeit 2031, Schaden 8, Verzauberbarkeit Slot `sword`) sind an
   den echten Netherit-Schwert angeglichen.
 - Aussehen: Vanillas eigene `netherite_sword.png`, pixelidentisch in
