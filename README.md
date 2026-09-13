@@ -10,12 +10,24 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
 | Item   | `myaddon:frost_wand`   | Froststab: friert bei Benutzung alle Mobs im Umkreis ein (Slowness + Frostschaden), Cooldown und Haltbarkeitsverbrauch per Skript |
 | Item   | `myaddon:frost_shard`  | Craftingmaterial, Drop von Erz und Golem |
 | Block  | `myaddon:frost_ore`    | Erz mit eigener Loot Table, leichtem Leuchten und Skript-Effekt beim Abbau |
-| Entity | `myaddon:frost_golem`  | Feindlicher Mob mit eigenem Modell, Spawn-Regeln in kalten Biomen und Enrage-Phase unter 50 % Leben |
+| Entity | `myaddon:frost_golem`  | Feindlicher Mob, Form + Textur der echten Kupfergolem-Vorlage (blau eingefaerbt), Spawn-Regeln in kalten Biomen und Enrage-Phase unter 50 % Leben |
 | Item   | `myaddon:sonic_bow`    | Schallbogen: verschiesst statt Pfeilen den Sonic Boom des Wardens |
 | Item   | `myaddon:echo_charge`  | Munition des Schallbogens |
 | Entity | `myaddon:sonic_boom`   | Unsichtbares Projektil (kein Pfeilmodell), nur der echte Sonic-Boom-Partikel des Wardens ist sichtbar |
 | Item   | `myaddon:warden_ingot` | Craftingmaterial aus einem Echosplitter, Zutat fuer den Schallbogen |
-| Item   | `myaddon:warden_hammer`| "Hammer": Schmiede-Werkzeug (Schmiedetisch) und zugleich Werkzeug fuer das eigene Amboss-Menue (siehe unten) |
+| Item   | `myaddon:warden_hammer`| "Hammer": Schmiedetisch-Template fuer das Upgrade zum Schallbogen |
+
+### Frost-Golem: Modell & Textur
+
+Modell (`geometry.frost_golem`) ist eine pixelidentische Kopie von Vanillas
+`geometry.copper_golem` (Kreuz-Koerper, Kopf mit Hut/Vane, gleiche
+UV-Aufteilung, 64x64) — nicht mehr der urspruengliche, selbst gebaute
+Humanoid. Die Textur ist Vanillas eigene `copper_golem.png`,
+pixelidentisch in Form/Schattierung, nur jeder Pixel per Helligkeit von
+Kupfer-Orange auf das Eis-Blau der Addon-Palette (`ICE_DARK` .. `ICE_LIGHT`
+in `tools/gen-textures.mjs`) umgefaerbt. Deshalb wird `frost_golem.png`
+nicht mehr von `npm run textures` erzeugt — sie ist eine statische Datei
+wie `warden_hammer.png`/`warden_ingot.png`.
 
 ### Beschaffung
 

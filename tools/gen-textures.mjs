@@ -183,35 +183,15 @@ function frostOre() {
   return c;
 }
 
-function frostGolem() {
-  const c = new Canvas(64, 64);
-  c.rect(0, 0, 64, 64, CLEAR);
-  // body (uv 0,0 -> 32x18), legs (32,0 -> 16x16), arms (48,0 -> 16x16), head (0,32 -> 32x16)
-  const regions = [
-    [0, 0, 32, 18, ICE],
-    [32, 0, 16, 16, ICE_DARK],
-    [48, 0, 16, 16, ICE_DARK],
-    [0, 32, 32, 16, ICE_LIGHT],
-  ];
-  for (const [x, y, w, h, base] of regions) {
-    for (let dy = 0; dy < h; dy++) {
-      for (let dx = 0; dx < w; dx++) {
-        const n = c.noise(x + dx, y + dy, 11);
-        const shade = n > 0.75 ? 12 : n < 0.25 ? -12 : 0;
-        c.set(x + dx, y + dy, [
-          Math.min(255, Math.max(0, base[0] + shade)),
-          Math.min(255, Math.max(0, base[1] + shade)),
-          Math.min(255, Math.max(0, base[2] + shade)),
-        ]);
-      }
-    }
-  }
-  // face on the head front quad (uv x 8..16, y 32..48)
-  c.rect(10, 37, 2, 2, [26, 74, 110]);
-  c.rect(14, 37, 2, 2, [26, 74, 110]);
-  c.rect(11, 42, 4, 1, [26, 74, 110]);
-  return c;
-}
+/**
+ * frost_golem.png is no longer generated here: it is vanilla's own
+ * copper_golem.png, pixel-for-pixel (same shape, same shading), with every
+ * pixel's hue remapped from copper-orange to the addon's icy blue palette
+ * (ICE_DARK..ICE_LIGHT) by luminance - see the recolor step documented in
+ * the project README. It must match `geometry.frost_golem`'s copy of the
+ * real `geometry.copper_golem` UVs exactly, so it's checked in as a static
+ * asset instead of being reproduced by this procedural generator.
+ */
 
 /**
  * Pixel-identical to vanilla's bow (standby) icon, except the grey leather
@@ -355,7 +335,6 @@ const OUTPUTS = {
   "packs/resource_pack/textures/items/frost_shard.png": frostShard,
   "packs/resource_pack/textures/items/frost_wand.png": frostWand,
   "packs/resource_pack/textures/blocks/frost_ore.png": frostOre,
-  "packs/resource_pack/textures/entity/frost_golem.png": frostGolem,
   "packs/resource_pack/textures/items/sonic_bow.png": sonicBow,
   "packs/resource_pack/textures/items/sonic_bow_pulling_0.png": () => sonicBowPulling(0),
   "packs/resource_pack/textures/items/sonic_bow_pulling_1.png": () => sonicBowPulling(1),
