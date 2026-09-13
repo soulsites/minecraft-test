@@ -47,24 +47,9 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
   `myaddon:warden_ingot` als Zusatz ein und erhaelt `myaddon:sonic_bow`. Der
   Hammer wird dabei wie ein normales Schmiedetisch-Template verbraucht. Siehe
   `packs/behavior_pack/recipes/sonic_bow_upgrade.json`.
-- **Hammer-Menue am Amboss**: haelt man den Hammer in der Hand und
-  rechtsklickt einen Amboss, oeffnet sich statt der normalen
-  Umbenennen/Reparieren/Verzaubern-UI ein eigenes Menue namens "Hammer" mit
-  genau zwei Knoepfen:
-  - Schallbogen: 1x `minecraft:bow` + 1x `myaddon:warden_ingot` →
-    1x `myaddon:sonic_bow`
-  - Echoladung: 1x `minecraft:arrow` + 1x `minecraft:echo_shard` →
-    1x `myaddon:echo_charge`
-
-  Fehlen die Zutaten im Inventar, passiert nichts (Hinweis im Chat); sonst
-  werden sie sofort getauscht. Der Hammer selbst wird dabei **nicht**
-  verbraucht — er bleibt als wiederverwendbares Werkzeug in der Hand.
-  Technischer Hintergrund: Bedrocks Amboss hat eine fest codierte UI, die
-  sich nicht durch ein echtes Item-Slot-Gitter ersetzen laesst (auch nicht
-  per Script API) — dieses Knopf-Menue ist die naechstmoegliche Annaeherung
-  und bietet bewusst nur diese zwei Rezepte an, nichts sonst. Ohne Hammer in
-  der Hand verhaelt sich der Amboss weiterhin ganz normal. Siehe
-  `src/HammerMenu.ts` und `src/config.ts` (`HammerRecipes`).
+- **Hammer-Menue am Amboss**: wieder entfernt (siehe "Bekannte Probleme"
+  unten) — der Hammer funktioniert aktuell nur noch als Schmiedetisch-Template
+  wie oben beschrieben.
 
 ### Schallbogen im Detail
 
@@ -128,6 +113,23 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
   gedroppte Items, XP-Orbs, ...) — dauerhafte, spuerbare Lag, unabhaengig
   davon, ob ueberhaupt geschossen wird. Siehe
   `SonicBoomManager.discoverNewShots`.
+
+## Bekannte Probleme
+
+- **Massives, dauerhaftes Lag (Geraet wird sehr heiss)**, gemeldet nachdem das
+  Hammer-Menue am Amboss (`@minecraft/server-ui`, `ActionFormData`,
+  `world.beforeEvents.playerInteractWithBlock`) hinzugekommen war. Zwei
+  andere, unabhaengig identifizierte und tatsaechlich staendig aktive
+  Ursachen wurden behoben (die `entitySpawn`-Subscription ohne Typ-Filter,
+  siehe oben; das `hud_screen.json`-Fadenkreuz) — keine davon hat das
+  gemeldete Ausmass des Lags erklaert oder behoben. Da die Hammer-Menue-
+  Funktion zeitlich exakt mit dem ersten Auftreten zusammenfaellt und die
+  mit Abstand groesste Aenderung seither war (neue Skript-Abhaengigkeit,
+  neue globale Event-Subscription, neues UI-System), wurde sie komplett
+  wieder entfernt, ohne dass die genaue Ursache im Detail bestaetigt ist.
+  Der Hammer funktioniert seitdem wieder nur als Schmiedetisch-Template.
+  Falls das Lag danach immer noch besteht, liegt es nicht an diesem
+  Addon-Code.
 
 ## Projektstruktur
 
