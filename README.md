@@ -139,15 +139,15 @@ Uebergang (der in Bedrock etwa dort liegt), statt ueber den gesamten
 Hoehenbereich verteilt. Siehe `feature_rules/frost_ore_feature_rules.json`.
 
 Aussehen: Vanillas eigene `diamond_ore.png` / `deepslate_diamond_ore.png`,
-pixelidentisch in Form — aber anders als beim Frost-Golem/-Schwert wird
-hier **nur** der Diamant-Kristall recolored (Pixel, bei denen der hellste
-und dunkelste Farbkanal um mehr als 10 auseinanderliegen — Diamant-Pixel
-sind deutlich cyanstichig, Gesteins-Pixel praktisch neutral grau), per
-Helligkeit in einen eigenen, noch helleren "Hellblau bis Ultra-Hellblau"-
-Bereich. Alle restlichen (grauen) Pixel werden 1:1 unveraendert
-uebernommen — das Gestein bleibt also echtes Grau/Blaugrau, nur die
-Splitter leuchten hellblau. Beide Texturen sind statische Dateien, nicht
-mehr Teil von `npm run textures`.
+pixelidentisch in Form und Farbe — aber anders als beim Frost-Golem/-Schwert
+wird hier **kein** Farbton umgemappt. Nur die Diamant-Kristall-Pixel (bei
+denen der hellste und dunkelste Farbkanal um mehr als 10 auseinanderliegen
+— Diamant-Pixel sind deutlich cyanstichig, Gesteins-Pixel praktisch neutral
+grau) werden 45% Richtung Weiss aufgehellt, bei ihrem urspruenglichen
+Blauton. Alle restlichen (grauen) Pixel werden 1:1 unveraendert
+uebernommen — das Gestein bleibt also echtes Grau/Blaugrau, die Splitter
+sind schlicht ein helleres Blau als im Original. Beide Texturen sind
+statische Dateien, nicht mehr Teil von `npm run textures`.
 
 ### Beschaffung
 
