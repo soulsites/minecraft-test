@@ -1,4 +1,5 @@
 import {
+  EntityDamageCause,
   EquipmentSlot,
   ItemStack,
   MolangVariableMap,
@@ -7,6 +8,7 @@ import {
   world,
   type Entity,
   type EntityHitEntityAfterEvent,
+  type EntityHurtAfterEvent,
   type Vector3,
 } from "@minecraft/server";
 import { FrostSwordConfig, Identifiers } from "./config";
@@ -14,21 +16,24 @@ import { FrostSwordConfig, Identifiers } from "./config";
 /** One currently-frozen target. */
 interface FrozenTarget {
   readonly entity: Entity;
+  /** Position it gets pinned back to every tick - works for any mob, flying or not. */
+  readonly anchor: Vector3;
+  /** The tick freeze() was first called - lets the triggering hit through untouched. */
+  readonly frozenSinceTick: number;
   ticksRemaining: number;
   ticksSinceParticles: number;
-  /** Last position the target stood on solid ground, for the edge-bounce below. */
-  lastGroundLocation: Vector3 | undefined;
-  wasOnGround: boolean;
+  /** Damage taken while frozen, healed back instantly and released all at once on thaw. */
+  bufferedDamage: number;
 }
 
 /**
  * Drives `myaddon:frost_sword`: hitting a mob or player with it in hand
- * freezes the target for `freezeDurationTicks` - not rooted in place, but
- * sliding around like it's standing on ice (frictionless), unable to jump,
- * and unable to slide off a ledge. The cooldown is per *target*, not per
- * wielder: hitting the same zombie again right after does nothing until
- * `cooldownTicks` pass, but a different zombie (or any other target) can be
- * frozen immediately regardless of when it was last used.
+ * freezes the target in place for `freezeDurationTicks` - pinned to the spot
+ * every tick regardless of its own AI/knockback/flight (works the same for
+ * every mob, not just ground-walkers), unable to move at all. Any damage it
+ * takes while frozen is healed back instantly (so its health bar doesn't
+ * move) and buffered; the moment the freeze ends, the entire buffered
+ * total is dealt at once. The cooldown is per *target*, not per wielder.
  */
 export class FrostSwordManager {
   private readonly frozen = new Map<string, FrozenTarget>();
@@ -42,6 +47,7 @@ export class FrostSwordManager {
 
   public register(): void {
     world.afterEvents.entityHitEntity.subscribe(this.onEntityHitEntity);
+    world.afterEvents.entityHurt.subscribe(this.onEntityHurt);
     system.runInterval(() => this.tick(), 1);
   }
 
@@ -58,6 +64,20 @@ export class FrostSwordManager {
     this.startCooldown(target);
     this.freeze(target);
     this.chargeSword(attacker, weapon);
+  };
+
+  /** Heals back and buffers any damage a frozen target takes, instead of letting it apply immediately. */
+  private onEntityHurt = (event: EntityHurtAfterEvent): void => {
+    const frozen = this.frozen.get(event.hurtEntity.id);
+    if (!frozen) return;
+    // Let the very hit that triggers the freeze through untouched.
+    if (system.currentTick <= frozen.frozenSinceTick) return;
+
+    const health = frozen.entity.getComponent("minecraft:health");
+    if (!health) return;
+
+    health.setCurrentValue(Math.min(health.effectiveMax, health.currentValue + event.damage));
+    frozen.bufferedDamage += event.damage;
   };
 
   private isOnCooldown(target: Entity): boolean {
@@ -79,10 +99,11 @@ export class FrostSwordManager {
 
     this.frozen.set(target.id, {
       entity: target,
+      anchor: target.location,
+      frozenSinceTick: system.currentTick,
       ticksRemaining: FrostSwordConfig.freezeDurationTicks,
       ticksSinceParticles: 0,
-      lastGroundLocation: target.isOnGround ? target.location : undefined,
-      wasOnGround: target.isOnGround,
+      bufferedDamage: 0,
     });
   }
 
@@ -93,8 +114,8 @@ export class FrostSwordManager {
         continue;
       }
 
-      this.slideOnIce(frozen.entity);
-      this.preventFallingOffLedges(frozen);
+      frozen.entity.teleport(frozen.anchor);
+      frozen.entity.clearVelocity();
 
       frozen.ticksSinceParticles++;
       if (frozen.ticksSinceParticles >= FrostSwordConfig.particleIntervalTicks) {
@@ -103,37 +124,15 @@ export class FrostSwordManager {
       }
 
       frozen.ticksRemaining--;
-      if (frozen.ticksRemaining <= 0) this.frozen.delete(id);
+      if (frozen.ticksRemaining <= 0) this.thaw(id, frozen);
     }
   }
 
-  /** Cancels upward velocity (no jumping) and re-boosts horizontal velocity against ground friction (ice slide). */
-  private slideOnIce(entity: Entity): void {
-    const velocity = entity.getVelocity();
-    if (velocity.y > 0) entity.applyImpulse({ x: 0, y: -velocity.y, z: 0 });
-
-    const horizontalSpeed = Math.hypot(velocity.x, velocity.z);
-    if (horizontalSpeed > 0.001) {
-      entity.applyImpulse({
-        x: velocity.x * FrostSwordConfig.slideBoost,
-        y: 0,
-        z: velocity.z * FrostSwordConfig.slideBoost,
-      });
-    }
-  }
-
-  /** Snaps the target back the moment it slides off the edge it was standing on. */
-  private preventFallingOffLedges(frozen: FrozenTarget): void {
-    const { entity } = frozen;
-    if (entity.isOnGround) {
-      frozen.lastGroundLocation = entity.location;
-      frozen.wasOnGround = true;
-      return;
-    }
-
-    if (frozen.wasOnGround && frozen.lastGroundLocation) {
-      entity.teleport(frozen.lastGroundLocation);
-      entity.clearVelocity();
+  /** Removes the freeze and, if any damage was buffered, deals it all at once. */
+  private thaw(id: string, frozen: FrozenTarget): void {
+    this.frozen.delete(id);
+    if (frozen.bufferedDamage > 0 && frozen.entity.isValid) {
+      frozen.entity.applyDamage(frozen.bufferedDamage, { cause: EntityDamageCause.override });
     }
   }
 

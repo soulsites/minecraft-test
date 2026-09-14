@@ -22,18 +22,10 @@ export const WardenSounds = {
 } as const;
 
 export const FrostSwordConfig = {
-  /** How long a hit target stays frozen/sliding, in ticks (3s). */
+  /** How long a hit target stays frozen in place, in ticks (3s). */
   freezeDurationTicks: 60,
-  /** The ability only re-triggers this often per wielder, in ticks (1 min). */
+  /** The ability only re-triggers this often per *target*, in ticks (1 min). */
   cooldownTicks: 1200,
-  /**
-   * Fraction of the target's own horizontal velocity re-applied every tick
-   * while frozen, to counteract normal ground friction and approximate
-   * frictionless ice sliding - Bedrock has no per-entity "ground friction
-   * override", so this is a velocity-based approximation, not real ice
-   * physics. Tune down if it slides too far, up if it stops too abruptly.
-   */
-  slideBoost: 0.35,
   /**
    * The icy "shell" is drawn as a ring of particles around the target,
    * refreshed every N ticks rather than every tick - the same throttling

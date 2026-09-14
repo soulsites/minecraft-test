@@ -49,21 +49,25 @@ wie `warden_hammer.png`/`warden_ingot.png`.
 
 - Wirkt beim **Treffer im Nahkampf** — sowohl gegen Mobs als auch gegen
   Spieler — für `freezeDurationTicks` (60 Ticks = 3s):
-  - Statt komplett bewegungsunfaehig zu sein (fruehere Version), **rutscht**
-    das Ziel jetzt wie auf glattem Eis: jeden Tick wird ein Teil seiner
-    eigenen horizontalen Geschwindigkeit erneut aufaddiert
-    (`slideBoost` in `src/config.ts`), was die normale Bodenreibung
-    ausgleicht. Bedrock hat keine API, um die Reibung eines Bodens fuer nur
-    eine Entity zu aendern — das ist eine geschwindigkeitsbasierte
-    Annaeherung an echtes Eis-Rutschen, keine echte Physik-Simulation.
-  - **Kann nicht hoch**: positive Y-Geschwindigkeit (Springen) wird jeden
-    Tick sofort aufgehoben.
-  - **Kann nicht von einer Kante rutschen**: sobald das Ziel den Boden
-    verliert, nachdem es ihn im selben Einfrier-Zeitraum noch unter sich
-    hatte, wird es exakt auf die letzte Boden-Position zurückgesetzt und
-    die Geschwindigkeit genullt — es rutscht bis an die Kante, aber nicht
-    darueber hinaus. (Wird es bereits in der Luft getroffen, greift der
-    Kantenschutz erst, sobald es das erste Mal wieder landet.)
+  - **Komplett bewegungsunfaehig**: das Ziel wird jeden Tick exakt auf die
+    Position zurueckgesetzt, an der es getroffen wurde (`teleport` +
+    `clearVelocity()`), unabhaengig von seiner eigenen KI, Wissbegierde,
+    Flugfaehigkeit oder Knockback-Resistenz — funktioniert dadurch bei
+    jedem Mob gleich, nicht nur bei bodengebundenen. (Fruehere Versionen
+    hatten erst ein reines Slowness-Effekt-Einfrieren, dann ein Eis-
+    Rutschen probiert — dieser feste Positions-Anker ist die robusteste
+    und einzige Variante, die wirklich bei jeder Entity gleich funktioniert.)
+  - **Schaden waehrend des Einfrierens passiert nicht sofort**: jeder
+    Schaden, den das Ziel waehrend des Einfrierens erhaelt (von der
+    Schwert-Wielderin genauso wie von Dritten, Fallschaden, Feuer, etc.),
+    wird per `world.afterEvents.entityHurt` erkannt, sofort per
+    `setCurrentValue()` zurueckgeheilt (die Lebensanzeige bewegt sich also
+    waehrend des Einfrierens gar nicht) und aufsummiert. Sobald das
+    Einfrieren nach den 3 Sekunden endet, wird die gesamte aufgesammelte
+    Schadenssumme auf einmal zugefuegt (`EntityDamageCause.override`, um
+    doppelte Ruestungs-Reduktion auf einen bereits reduzierten Wert zu
+    vermeiden). Der ausloesende Treffer selbst (der das Einfrieren startet)
+    ist davon ausgenommen und wirkt normal.
   - Ring aus Schneeflocken-Partikeln um Fuesse und Oberkoerper als
     "eingefrorene" Optik, alle `particleIntervalTicks` (5) Ticks statt
     jeden Tick — gleiche Drossel-Logik wie beim Schallbogen-Trail, aus
