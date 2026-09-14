@@ -4,6 +4,7 @@ pack.description=Resource pack: textures, models and names for the Frost Addon.
 item.myaddon:frost_sword.name=Frost Sword
 item.myaddon:frost_shard.name=Frost Shard
 tile.myaddon:frost_ore.name=Frost Ore
+tile.myaddon:deepslate_frost_ore.name=Deepslate Frost Ore
 entity.myaddon:frost_golem.name=Frost Golem
 item.spawn_egg.entity.myaddon:frost_golem.name=Spawn Frost Golem
 item.myaddon:sonic_bow.name=Sonic Bow

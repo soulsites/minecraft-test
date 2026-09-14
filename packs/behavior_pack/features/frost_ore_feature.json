@@ -8,10 +8,11 @@
     "replace_rules": [
       {
         "places_block": { "name": "myaddon:frost_ore" },
-        "may_replace": [
-          { "name": "minecraft:stone" },
-          { "name": "minecraft:deepslate" }
-        ]
+        "may_replace": [{ "name": "minecraft:stone" }]
+      },
+      {
+        "places_block": { "name": "myaddon:deepslate_frost_ore" },
+        "may_replace": [{ "name": "minecraft:deepslate" }]
       }
     ]
   }

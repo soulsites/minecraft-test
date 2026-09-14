@@ -172,12 +172,14 @@ function frostShard() {
  */
 
 /**
- * frost_ore.png is no longer generated here: like frost_golem.png and
- * frost_sword.png, it's vanilla's own diamond_ore.png, pixel-for-pixel,
- * with every pixel's hue remapped by luminance - but to an even brighter
- * "ultra" light blue (ULTRA_ICE_LIGHT) than the rest of the addon's ICE
- * palette, since the diamond crystals were specifically asked to stand out
- * more than a regular ICE_LIGHT would. Checked in as a static asset.
+ * frost_ore.png / deepslate_frost_ore.png are no longer generated here:
+ * they're vanilla's own diamond_ore.png / deepslate_diamond_ore.png,
+ * pixel-for-pixel, but *only* the diamond-crystal pixels are recolored (by
+ * luminance, into a hellblau..ultra-hellblau range distinctly brighter than
+ * the rest of the addon's ICE palette) - grey/near-grey stone pixels
+ * (max channel - min channel <= 10) are copied through completely
+ * unchanged, so the rock itself still looks like real stone/deepslate.
+ * Checked in as static assets.
  */
 
 /**

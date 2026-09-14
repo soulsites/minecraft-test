@@ -9,7 +9,7 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
 | ------ | ---------------------- | ------------ |
 | Item   | `myaddon:frost_sword`  | Frostschwert: normales Schwert (Netherit-Werte), das getroffene Ziele (Mobs und Spieler) an Ort und Stelle einfrieren laesst |
 | Item   | `myaddon:frost_shard`  | Craftingmaterial, Drop von Erz und Golem |
-| Block  | `myaddon:frost_ore`    | Erz mit eigener Loot Table, leichtem Leuchten und Skript-Effekt beim Abbau |
+| Block  | `myaddon:frost_ore` / `myaddon:deepslate_frost_ore` | Erz (Stein-/Tiefenschiefer-Variante) mit eigener Loot Table, leichtem Leuchten und Skript-Effekt beim Abbau |
 | Entity | `myaddon:frost_golem`  | Feindlicher Mob, Form + Textur der echten Kupfergolem-Vorlage (blau eingefaerbt), spawnt nur in Schneebiomen, greift mit nach vorn gestreckten Armen an, Enrage-Phase unter 50 % Leben |
 | Item   | `myaddon:sonic_bow`    | Schallbogen: verschiesst statt Pfeilen den Sonic Boom des Wardens |
 | Item   | `myaddon:echo_charge`  | Munition des Schallbogens |
@@ -116,21 +116,38 @@ wie `warden_hammer.png`/`warden_ingot.png`.
 
 ### Frost-Erz: Vorkommen
 
-`myaddon:frost_ore` generiert jetzt natuerlich (`features/frost_ore_feature.json`
-+ `feature_rules/frost_ore_feature_rules.json`), aber bewusst selten
-gehalten (kleine Ader, ein Versuch pro Chunk, schmales Hoehenband, nur in
+Zwei Bloecke, wie bei Vanilla-Erzen ueblich eins fuer Stein und eins fuer
+Tiefenschiefer:
+
+- `myaddon:frost_ore` ersetzt `minecraft:stone`
+- `myaddon:deepslate_frost_ore` ersetzt `minecraft:deepslate` (etwas
+  laenger zum Abbauen: 4.5s statt 3.0s, wie bei Vanillas
+  Tiefenschiefer-Erzen ueblich)
+
+Beide werden von **derselben** Ader erzeugt (`features/frost_ore_feature.json`,
+zwei `replace_rules` — welcher Block entsteht, haengt nur davon ab, ob an
+der jeweiligen Position gerade Stein oder Tiefenschiefer ansteht) und sind
+bewusst selten gehalten (kleine Ader, ein Versuch pro Chunk, nur in
 Schneebiomen) — angelehnt an die Seltenheit von Antikem Schrott. Mojangs
 echte Antiker-Schrott-Werte liegen nicht offen einsehbar vor (die
 `bedrock-samples`-Rezept-/Feature-Dateien dafuer waren beim Schreiben nicht
 erreichbar), es ist also eine bewusst knapp bemessene Annaeherung, keine
 verifizierte 1:1-Kopie der echten Drop-Rate.
 
-Aussehen: Vanillas eigene `diamond_ore.png`, pixelidentisch in Form, per
-Helligkeit umgefaerbt — wie bei `frost_golem.png`/`frost_sword.png`, nur mit
-einem noch helleren "Ultra-Hellblau" fuer die Kristalle (heller als das
-`ICE_LIGHT` der uebrigen Palette, extra dafuer definiert), waehrend der
-Gesteins-Hintergrund im normalen `ICE_DARK` bleibt. Ebenfalls eine statische
-Datei, nicht mehr Teil von `npm run textures`.
+Hoehe: `y` zwischen -8 und 8, also rund um den Stein-Tiefenschiefer-
+Uebergang (der in Bedrock etwa dort liegt), statt ueber den gesamten
+Hoehenbereich verteilt. Siehe `feature_rules/frost_ore_feature_rules.json`.
+
+Aussehen: Vanillas eigene `diamond_ore.png` / `deepslate_diamond_ore.png`,
+pixelidentisch in Form — aber anders als beim Frost-Golem/-Schwert wird
+hier **nur** der Diamant-Kristall recolored (Pixel, bei denen der hellste
+und dunkelste Farbkanal um mehr als 10 auseinanderliegen — Diamant-Pixel
+sind deutlich cyanstichig, Gesteins-Pixel praktisch neutral grau), per
+Helligkeit in einen eigenen, noch helleren "Hellblau bis Ultra-Hellblau"-
+Bereich. Alle restlichen (grauen) Pixel werden 1:1 unveraendert
+uebernommen — das Gestein bleibt also echtes Grau/Blaugrau, nur die
+Splitter leuchten hellblau. Beide Texturen sind statische Dateien, nicht
+mehr Teil von `npm run textures`.
 
 ### Beschaffung
 

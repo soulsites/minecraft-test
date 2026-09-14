@@ -4,6 +4,7 @@ pack.description=Ressourcenpaket: Texturen, Modelle und Namen fuer das Frost Add
 item.myaddon:frost_sword.name=Frostschwert
 item.myaddon:frost_shard.name=Frostsplitter
 tile.myaddon:frost_ore.name=Frosterz
+tile.myaddon:deepslate_frost_ore.name=Tiefenschiefer-Frosterz
 entity.myaddon:frost_golem.name=Frostgolem
 item.spawn_egg.entity.myaddon:frost_golem.name=Frostgolem spawnen
 item.myaddon:sonic_bow.name=Schallbogen

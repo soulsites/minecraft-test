@@ -4,6 +4,7 @@
   "padding": 8,
   "num_mip_levels": 4,
   "texture_data": {
-    "frost_ore": { "textures": "textures/blocks/frost_ore" }
+    "frost_ore": { "textures": "textures/blocks/frost_ore" },
+    "deepslate_frost_ore": { "textures": "textures/blocks/deepslate_frost_ore" }
   }
 }

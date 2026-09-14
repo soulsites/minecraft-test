@@ -15,7 +15,7 @@
     "distribution": {
       "iterations": 1,
       "x": { "distribution": "uniform", "extent": [0, 16] },
-      "y": { "distribution": "uniform", "extent": [-54, 30] },
+      "y": { "distribution": "uniform", "extent": [-8, 8] },
       "z": { "distribution": "uniform", "extent": [0, 16] }
     }
   }
