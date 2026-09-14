@@ -165,6 +165,36 @@ function frostShard() {
 }
 
 /**
+ * A compact faceted gem (unlike the elongated frostShard splinter) - the
+ * "compressed" crystal a frost golem accepts to trust the player who feeds
+ * it one.
+ */
+function frostCrystal() {
+  const c = new Canvas(16, 16);
+  c.rect(0, 0, 16, 16, CLEAR);
+  const rows = [
+    [7, 3, 2],
+    [6, 4, 4],
+    [5, 5, 6],
+    [4, 6, 8],
+    [4, 7, 8],
+    [4, 8, 8],
+    [5, 9, 6],
+    [6, 10, 4],
+    [7, 11, 2],
+  ];
+  for (const [x, y, w] of rows) {
+    for (let i = 0; i < w; i++) c.set(x + i, y, ICE);
+  }
+  c.set(6, 6, ICE_LIGHT);
+  c.set(7, 6, ICE_LIGHT);
+  c.set(5, 8, ICE_DARK);
+  c.set(10, 8, ICE_DARK);
+  c.set(7, 4, ICE_LIGHT);
+  return c;
+}
+
+/**
  * frost_sword.png is no longer generated here: like frost_golem.png, it's
  * vanilla's own netherite_sword.png, pixel-for-pixel, with every pixel's
  * hue remapped from netherite's grey/purple to the addon's icy blue
@@ -333,6 +363,7 @@ const OUTPUTS = {
   "packs/resource_pack/textures/items/warden_ingot.png": wardenIngot,
   "packs/resource_pack/textures/items/warden_hammer.png": wardenHammer,
   "packs/resource_pack/textures/items/frost_shard.png": frostShard,
+  "packs/resource_pack/textures/items/frost_crystal.png": frostCrystal,
   "packs/resource_pack/textures/items/sonic_bow.png": sonicBow,
   "packs/resource_pack/textures/items/sonic_bow_pulling_0.png": () => sonicBowPulling(0),
   "packs/resource_pack/textures/items/sonic_bow_pulling_1.png": () => sonicBowPulling(1),

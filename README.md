@@ -10,7 +10,8 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
 | Item   | `myaddon:frost_sword`  | Frostschwert: normales Schwert (Netherit-Werte), das getroffene Ziele (Mobs und Spieler) an Ort und Stelle einfrieren laesst |
 | Item   | `myaddon:frost_shard`  | Craftingmaterial, Drop von Erz und Golem |
 | Block  | `myaddon:frost_ore` / `myaddon:deepslate_frost_ore` | Erz (Stein-/Tiefenschiefer-Variante) mit eigener Loot Table, leichtem Leuchten und Skript-Effekt beim Abbau |
-| Entity | `myaddon:frost_golem`  | Feindlicher Mob, Form + Textur der echten Kupfergolem-Vorlage (blau eingefaerbt), spawnt nur in Schneebiomen, greift mit nach vorn gestreckten Armen an, Enrage-Phase unter 50 % Leben |
+| Entity | `myaddon:frost_golem`  | Feindlicher Mob, Form + Textur der echten Kupfergolem-Vorlage (blau eingefaerbt), spawnt nur in Schneebiomen, greift mit nach vorn gestreckten Armen an, Enrage-Phase unter 50 % Leben, greift auch andere aggressive Mobs an, bevorzugt aber Spieler |
+| Item   | `myaddon:frost_crystal`| Frostkristall: fuettert man ihn einem Frost-Golem, greift kein Frost-Golem mehr diesen Spieler an |
 | Item   | `myaddon:sonic_bow`    | Schallbogen: verschiesst statt Pfeilen den Sonic Boom des Wardens |
 | Item   | `myaddon:echo_charge`  | Munition des Schallbogens |
 | Entity | `myaddon:sonic_boom`   | Unsichtbares Projektil (kein Pfeilmodell), nur der echte Sonic-Boom-Partikel des Wardens ist sichtbar |
@@ -44,6 +45,27 @@ wie `warden_hammer.png`/`warden_ingot.png`.
   `true` und nach `attackPoseTicks` wieder auf `false`; die Resource-Pack-
   Animation `animation.frost_golem.attack` fragt sie per
   `query.property('myaddon:attacking')` ab.
+- **Ziel-Auswahl**: `minecraft:behavior.nearest_attackable_target` hat jetzt
+  zwei Eintraege in seiner `entity_types`-Liste — Spieler/Schneegolem zuerst,
+  andere aggressive Mobs (`is_family: monster`, aber nicht die eigene
+  `frost_golem`-Familie, damit sich Frost-Golems nicht gegenseitig
+  angreifen) danach. Die Reihenfolge in der Liste ist die Prioritaet (wie
+  bei Vanilla-Mobs, z. B. Piglin gegen Hoglin/Spieler): ist ein Spieler in
+  Reichweite, wird der immer bevorzugt, unabhaengig davon ob ein naeherer
+  aggressiver Mob da waere — erst wenn kein Spieler/Schneegolem in
+  Reichweite ist, greift er stattdessen den naechsten aggressiven Mob an.
+- **Frostkristall-Vertrauen**: fuettert man einem Frost-Golem (Rechtsklick
+  mit `myaddon:frost_crystal` in der Hand) einen Frostkristall, greift
+  **kein** Frost-Golem mehr diesen Spieler an. Das ist bewusst ein
+  globales "Frost-Golems vertrauen dir"-Flag (per Scoreboard-Objective
+  `myaddon_frost_trust`, im Spieler-Eintrag der Ziel-Filter oben zusaetzlich
+  gegen `score < 1` geprueft) statt einer Erinnerung pro einzelnem Golem —
+  Bedrocks deklaratives Ziel-Filtersystem kann nur globalen Entity-Zustand
+  abfragen (Scoreboard, Familie, Health, ...), keine "dieser eine Golem
+  kennt genau diesen einen Spieler"-Beziehung. Der Kristall wird beim
+  Fuettern verbraucht; ist der Spieler schon vertraut, passiert nichts
+  (Kristall bleibt erhalten). Siehe
+  `FrostGolemManager.onPlayerInteractWithEntity`.
 
 ### Frostschwert im Detail
 
@@ -161,6 +183,8 @@ statische Dateien, nicht mehr Teil von `npm run textures`.
   ```
   (`S` = Eissplitter, `N` = Netherit-Schwert). Siehe
   `packs/behavior_pack/recipes/frost_sword.json`.
+- **Frostkristall**: 4x `myaddon:frost_shard` (formlos) am Crafting-Tisch
+  ergibt 1x `myaddon:frost_crystal`.
 - **Echo-Ladung** (Munition): 4x `minecraft:arrow` + 1x `minecraft:echo_shard`
   am Crafting-Tisch ergibt 4x `myaddon:echo_charge`.
 - **Warden-Barren**: am Crafting-Tisch, 3x3-Muster — 1x `minecraft:echo_shard`

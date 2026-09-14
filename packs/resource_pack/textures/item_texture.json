@@ -8,6 +8,9 @@
     "frost_shard": {
       "textures": "textures/items/frost_shard"
     },
+    "frost_crystal": {
+      "textures": "textures/items/frost_crystal"
+    },
     "sonic_bow": {
       "textures": "textures/items/sonic_bow"
     },
