@@ -50,14 +50,9 @@
         "entity_types": [
           {
             "filters": {
-              "all_of": [
-                {
-                  "any_of": [
-                    { "test": "is_family", "subject": "other", "value": "player" },
-                    { "test": "is_family", "subject": "other", "value": "snowgolem" }
-                  ]
-                },
-                { "test": "score", "subject": "other", "domain": "myaddon_frost_trust", "operator": "<", "value": 1 }
+              "any_of": [
+                { "test": "is_family", "subject": "other", "value": "player" },
+                { "test": "is_family", "subject": "other", "value": "snowgolem" }
               ]
             },
             "max_dist": 24

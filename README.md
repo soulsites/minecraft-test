@@ -64,16 +64,20 @@ wie `warden_hammer.png`/`warden_ingot.png`.
     gewuenscht. Beide Bloecke werden dabei verbraucht und ein
     `myaddon:frost_golem` entsteht an der Stelle.
 
-  In beide Faellen greift **kein** Frost-Golem mehr diesen Spieler an. Das
-  ist bewusst ein globales "Frost-Golems vertrauen dir"-Flag (per
-  Scoreboard-Objective `myaddon_frost_trust`, im Spieler-Eintrag der
-  Ziel-Filter oben zusaetzlich gegen `score < 1` geprueft) statt einer
-  Erinnerung pro einzelnem Golem — Bedrocks deklaratives Ziel-Filtersystem
-  kann nur globalen Entity-Zustand abfragen (Scoreboard, Familie, Health,
-  ...), keine "dieser eine Golem kennt genau diesen einen Spieler"-
-  Beziehung. Ist der Spieler schon vertraut, passiert beim Fuettern nichts
-  (Splitter bleibt erhalten); Selbstbauen funktioniert trotzdem immer
-  (der Golem entsteht so oder so). Siehe
+  Beides traegt den Spieler in ein globales Scoreboard-Objective
+  (`myaddon_frost_trust`) ein — bewusst ein globales "Frost-Golems
+  vertrauen dir"-Flag statt einer Erinnerung pro einzelnem Golem, da
+  Bedrocks deklaratives Ziel-Filtersystem nur globalen Entity-Zustand
+  abfragen kann (Scoreboard, Familie, Health, ...), keine "dieser eine
+  Golem kennt genau diesen einen Spieler"-Beziehung.
+  **Aktueller Stand:** Der Ziel-Filter von `frost_golem.json` prueft dieses
+  Scoreboard noch **nicht** — ein `"test": "score"`-Filtereintrag dort hat
+  in einer fruehreren Version offenbar den kompletten Behavior Pack zum
+  Absturz gebracht (Schallbogen, Hammer-Menue, Frostschwert, sogar das
+  simple Warden-Barren-Rezept funktionierten danach nicht mehr) und wurde
+  wieder entfernt, bis eine sicher verifizierte Filter-Syntax dafuer
+  gefunden ist. Fuettern/Bauen setzt den Score also weiterhin, aber Golems
+  greifen den Spieler trotzdem weiter an, bis das nachgereicht ist. Siehe
   `FrostGolemManager.onPlayerInteractWithEntity` und
   `FrostGolemManager.onPlayerPlaceBlock`.
 
@@ -164,8 +168,10 @@ Tiefenschiefer:
   laenger zum Abbauen: 4.5s statt 3.0s, wie bei Vanillas
   Tiefenschiefer-Erzen ueblich)
 
-Beide sind komplett **explosionsimmun** (`"minecraft:destructible_by_explosion": false`)
-— anders als normales Vanilla-Erz ueberleben sie also auch Creeper/TNT/etc.
+Beide sind praktisch **explosionsimmun** (`explosion_resistance: 3600000`,
+statt eines Boolean-Werts — letzterer hat vermutlich denselben Pack-Absturz
+verursacht wie der Score-Filter oben, siehe "Bekannte Probleme") — anders
+als normales Vanilla-Erz ueberleben sie also auch Creeper/TNT/etc.
 
 Beide werden von **derselben** Ader erzeugt (`features/frost_ore_feature.json`,
 zwei `replace_rules` — welcher Block entsteht, haengt nur davon ab, ob an
@@ -333,6 +339,20 @@ statische Dateien, nicht mehr Teil von `npm run textures`.
   Addon-Ursache. Das Hammer-Menue ist seitdem wieder eingebaut. Falls
   irgendein Feature wieder Lag verursacht, hier nachschauen und ggf.
   wieder testweise entfernen.
+- **Kompletter Pack-Ausfall** (v1.0.45): nach dem Hinzufuegen von
+  `myaddon:frost_block` funktionierte praktisch nichts mehr — Schallbogen,
+  Hammer-Menue, Frostschwert, sogar das reine (skriptunabhaengige)
+  Warden-Barren-Rezept. Nur der Frost-Golem lief scheinbar weiter (vermutlich
+  ein bereits vor dem Update in der Welt vorhandenes Exemplar, nicht neu
+  darueber geladenes Verhalten). Das ist typisch dafuer, dass Bedrock den
+  **gesamten** Behavior Pack ablehnt, wenn nur eine einzelne Datei ein
+  ungueltiges Schema hat — nicht nur diese eine Datei. Verdaechtigt und
+  zurueckgebaut: `"minecraft:destructible_by_explosion": false` (Boolean
+  statt Objekt) in den Frost-Erz-Dateien, und ein `"test": "score"`-Eintrag
+  im Ziel-Filter von `frost_golem.json` — beides unverifizierte Bedrock-
+  Schemata, fuer die keine echten Vanilla-Beispiele auffindbar waren. Nach
+  dem Zuruecksetzen sollte wieder alles funktionieren; falls nicht, sind es
+  vermutlich doch nicht diese beiden Stellen gewesen.
 
 ## Projektstruktur
 
