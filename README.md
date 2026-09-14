@@ -15,7 +15,7 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
 | Item   | `myaddon:echo_charge`  | Munition des Schallbogens |
 | Entity | `myaddon:sonic_boom`   | Unsichtbares Projektil (kein Pfeilmodell), nur der echte Sonic-Boom-Partikel des Wardens ist sichtbar |
 | Item   | `myaddon:warden_ingot` | Craftingmaterial aus einem Echosplitter, Zutat fuer den Schallbogen |
-| Item   | `myaddon:warden_hammer`| "Hammer": Schmiedetisch-Template fuer das Upgrade zum Schallbogen |
+| Item   | `myaddon:warden_hammer`| "Hammer": Schmiedetisch-Template UND Werkzeug fuer das eigene Amboss-Menue |
 
 ### Frost-Golem: Modell & Textur
 
@@ -189,9 +189,25 @@ statische Dateien, nicht mehr Teil von `npm run textures`.
   `myaddon:warden_ingot` als Zusatz ein und erhaelt `myaddon:sonic_bow`. Der
   Hammer wird dabei wie ein normales Schmiedetisch-Template verbraucht. Siehe
   `packs/behavior_pack/recipes/sonic_bow_upgrade.json`.
-- **Hammer-Menue am Amboss**: wieder entfernt (siehe "Bekannte Probleme"
-  unten) — der Hammer funktioniert aktuell nur noch als Schmiedetisch-Template
-  wie oben beschrieben.
+- **Hammer-Menue am Amboss**: haelt man den Hammer in der Hand und
+  rechtsklickt einen Amboss, oeffnet sich statt der normalen
+  Umbenennen/Reparieren/Verzaubern-UI ein eigenes Menue namens "Hammer" mit
+  den Rezepten aus `HammerRecipes` in `src/config.ts`:
+  - Schallbogen: 1x `minecraft:bow` + 1x `myaddon:warden_ingot`
+  - Echoladung: 1x `minecraft:arrow` + 1x `minecraft:echo_shard`
+  - Frostschwert: 1x `minecraft:netherite_sword` + 8x `myaddon:frost_shard`
+
+  Fehlen die Zutaten im Inventar, passiert nichts (Hinweis im Chat); sonst
+  werden sie sofort getauscht. Der Hammer selbst wird dabei **nicht**
+  verbraucht — er bleibt als wiederverwendbares Werkzeug in der Hand. Ohne
+  Hammer in der Hand verhaelt sich der Amboss weiterhin ganz normal.
+  Technischer Hintergrund: Bedrocks Amboss hat eine fest codierte UI, die
+  sich nicht durch ein echtes Item-Slot-Gitter ersetzen laesst (auch nicht
+  per Script API) — dieses Knopf-Menue ist die naechstmoegliche Annaeherung
+  und bietet bewusst nur diese Rezepte an, nichts sonst. (War zwischenzeitlich
+  als Lag-Verdacht entfernt, siehe "Bekannte Probleme" — das Lag hat sich
+  seitdem als wahrscheinlich device-bedingt herausgestellt, siehe dort.)
+  Siehe `src/HammerMenu.ts`.
 
 ### Schallbogen im Detail
 
@@ -258,20 +274,19 @@ statische Dateien, nicht mehr Teil von `npm run textures`.
 
 ## Bekannte Probleme
 
-- **Massives, dauerhaftes Lag (Geraet wird sehr heiss)**, gemeldet nachdem das
-  Hammer-Menue am Amboss (`@minecraft/server-ui`, `ActionFormData`,
-  `world.beforeEvents.playerInteractWithBlock`) hinzugekommen war. Zwei
-  andere, unabhaengig identifizierte und tatsaechlich staendig aktive
-  Ursachen wurden behoben (die `entitySpawn`-Subscription ohne Typ-Filter,
-  siehe oben; das `hud_screen.json`-Fadenkreuz) — keine davon hat das
-  gemeldete Ausmass des Lags erklaert oder behoben. Da die Hammer-Menue-
-  Funktion zeitlich exakt mit dem ersten Auftreten zusammenfaellt und die
-  mit Abstand groesste Aenderung seither war (neue Skript-Abhaengigkeit,
-  neue globale Event-Subscription, neues UI-System), wurde sie komplett
-  wieder entfernt, ohne dass die genaue Ursache im Detail bestaetigt ist.
-  Der Hammer funktioniert seitdem wieder nur als Schmiedetisch-Template.
-  Falls das Lag danach immer noch besteht, liegt es nicht an diesem
-  Addon-Code.
+- **Massives, dauerhaftes Lag (Geraet wurde sehr heiss)** wurde gemeldet,
+  nachdem das Hammer-Menue am Amboss (`@minecraft/server-ui`,
+  `ActionFormData`, `world.beforeEvents.playerInteractWithBlock`)
+  hinzugekommen war. Zwei andere, unabhaengig identifizierte und
+  tatsaechlich staendig aktive Ursachen wurden behoben (die
+  `entitySpawn`-Subscription ohne Typ-Filter, siehe oben; das
+  `hud_screen.json`-Fadenkreuz) — keine davon hat das gemeldete Ausmass
+  erklaert. Das Hammer-Menue wurde daraufhin testweise komplett entfernt,
+  ohne messbare Besserung, und der Nutzer stufte das Lag danach selbst als
+  wahrscheinlich device-bedingt ein (schwaches Handy), nicht als
+  Addon-Ursache. Das Hammer-Menue ist seitdem wieder eingebaut. Falls
+  irgendein Feature wieder Lag verursacht, hier nachschauen und ggf.
+  wieder testweise entfernen.
 
 ## Projektstruktur
 

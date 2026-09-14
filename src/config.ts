@@ -72,3 +72,50 @@ export const SonicBowConfig = {
    */
   trailSpawnIntervalTicks: 4,
 } as const;
+
+/** One recipe offered by the Hammer's anvil menu. */
+export interface HammerRecipeConfig {
+  /** Label shown as the menu button. */
+  label: string;
+  ingredients: { itemId: string; count: number }[];
+  result: { itemId: string; count: number };
+}
+
+/**
+ * The anvil block. Right-clicking it while holding the Hammer opens the
+ * custom menu below instead of the vanilla rename/repair/enchant UI.
+ */
+export const ANVIL_BLOCK_ID = "minecraft:anvil";
+
+/**
+ * The Hammer's own crafting menu, opened on an anvil. Bedrock's anvil UI is
+ * hard-coded and can't host a real item-slot grid, so this is a button menu
+ * that checks the player's inventory for the listed ingredients and swaps
+ * them for the result on confirmation - only these recipes, nothing else.
+ */
+export const HammerRecipes: HammerRecipeConfig[] = [
+  {
+    label: "Schallbogen (1x Bogen + 1x Warden-Barren)",
+    ingredients: [
+      { itemId: "minecraft:bow", count: 1 },
+      { itemId: Identifiers.wardenIngot, count: 1 },
+    ],
+    result: { itemId: Identifiers.sonicBow, count: 1 },
+  },
+  {
+    label: "Echoladung (1x Pfeil + 1x Echosplitter)",
+    ingredients: [
+      { itemId: "minecraft:arrow", count: 1 },
+      { itemId: "minecraft:echo_shard", count: 1 },
+    ],
+    result: { itemId: Identifiers.echoCharge, count: 1 },
+  },
+  {
+    label: "Frostschwert (1x Netherit-Schwert + 8x Eissplitter)",
+    ingredients: [
+      { itemId: "minecraft:netherite_sword", count: 1 },
+      { itemId: Identifiers.frostShard, count: 8 },
+    ],
+    result: { itemId: Identifiers.frostSword, count: 1 },
+  },
+];
