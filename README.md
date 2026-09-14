@@ -67,7 +67,19 @@ wie `warden_hammer.png`/`warden_ingot.png`.
     Schadenssumme auf einmal zugefuegt (`EntityDamageCause.override`, um
     doppelte Ruestungs-Reduktion auf einen bereits reduzierten Wert zu
     vermeiden). Der ausloesende Treffer selbst (der das Einfrieren startet)
-    ist davon ausgenommen und wirkt normal.
+    ist davon ausgenommen und wirkt normal. Die Knockback-Wucht eines
+    Treffers wirkt sofort, noch bevor der naechste geplante Tick sie
+    korrigieren wuerde — deshalb werden Position/Geschwindigkeit direkt im
+    `entityHurt`-Handler selbst zurueckgesetzt, nicht erst einen Tick
+    spaeter, damit ein Treffer waehrend des Einfrierens das Ziel wirklich
+    gar nicht mehr bewegt. **Einschraenkung:** das kurze rote Aufblitzen
+    ("Hurt"-Animation), das Bedrock bei jedem echten Treffer clientseitig
+    zeigt, ist an das Feuern des Schadens-Events selbst gekoppelt, nicht an
+    die tatsaechliche Lebenspunkt-Aenderung — das laesst sich nicht
+    unterdruecken, ohne den Schaden komplett zu blockieren (z. B. via
+    Resistance-Effekt Stufe 5), was aber die genaue Schadenssumme fuer die
+    Freigabe am Ende zerstoeren wuerde. Bewegung ist komplett unterdrueckt,
+    das kurze Aufblitzen bleibt sichtbar.
   - Ring aus Schneeflocken-Partikeln um Fuesse und Oberkoerper als
     "eingefrorene" Optik, alle `particleIntervalTicks` (5) Ticks statt
     jeden Tick — gleiche Drossel-Logik wie beim Schallbogen-Trail, aus
@@ -112,6 +124,13 @@ echte Antiker-Schrott-Werte liegen nicht offen einsehbar vor (die
 `bedrock-samples`-Rezept-/Feature-Dateien dafuer waren beim Schreiben nicht
 erreichbar), es ist also eine bewusst knapp bemessene Annaeherung, keine
 verifizierte 1:1-Kopie der echten Drop-Rate.
+
+Aussehen: Vanillas eigene `diamond_ore.png`, pixelidentisch in Form, per
+Helligkeit umgefaerbt — wie bei `frost_golem.png`/`frost_sword.png`, nur mit
+einem noch helleren "Ultra-Hellblau" fuer die Kristalle (heller als das
+`ICE_LIGHT` der uebrigen Palette, extra dafuer definiert), waehrend der
+Gesteins-Hintergrund im normalen `ICE_DARK` bleibt. Ebenfalls eine statische
+Datei, nicht mehr Teil von `npm run textures`.
 
 ### Beschaffung
 

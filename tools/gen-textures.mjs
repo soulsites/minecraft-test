@@ -90,8 +90,6 @@ function crc32(buf) {
 const ICE_LIGHT = [201, 234, 247];
 const ICE = [143, 205, 232];
 const ICE_DARK = [88, 148, 184];
-const STONE = [128, 128, 128];
-const STONE_DARK = [104, 104, 104];
 const ARROW_SHAFT = [171, 137, 92];
 const ARROW_SHAFT_DARK = [130, 100, 64];
 const FLETCHING = [235, 235, 235];
@@ -173,26 +171,14 @@ function frostShard() {
  * (ICE_DARK..ICE_LIGHT) by luminance. Checked in as a static asset.
  */
 
-function frostOre() {
-  const c = new Canvas(16, 16);
-  for (let y = 0; y < 16; y++) {
-    for (let x = 0; x < 16; x++) {
-      c.set(x, y, c.noise(x, y, 3) > 0.5 ? STONE : STONE_DARK);
-    }
-  }
-  const blobs = [
-    [3, 3],
-    [9, 2],
-    [11, 9],
-    [4, 10],
-  ];
-  for (const [bx, by] of blobs) {
-    c.rect(bx, by, 3, 3, ICE);
-    c.set(bx, by, ICE_LIGHT);
-    c.set(bx + 2, by + 2, ICE_DARK);
-  }
-  return c;
-}
+/**
+ * frost_ore.png is no longer generated here: like frost_golem.png and
+ * frost_sword.png, it's vanilla's own diamond_ore.png, pixel-for-pixel,
+ * with every pixel's hue remapped by luminance - but to an even brighter
+ * "ultra" light blue (ULTRA_ICE_LIGHT) than the rest of the addon's ICE
+ * palette, since the diamond crystals were specifically asked to stand out
+ * more than a regular ICE_LIGHT would. Checked in as a static asset.
+ */
 
 /**
  * frost_golem.png is no longer generated here: it is vanilla's own
@@ -344,7 +330,6 @@ const OUTPUTS = {
   "packs/resource_pack/textures/items/warden_ingot.png": wardenIngot,
   "packs/resource_pack/textures/items/warden_hammer.png": wardenHammer,
   "packs/resource_pack/textures/items/frost_shard.png": frostShard,
-  "packs/resource_pack/textures/blocks/frost_ore.png": frostOre,
   "packs/resource_pack/textures/items/sonic_bow.png": sonicBow,
   "packs/resource_pack/textures/items/sonic_bow_pulling_0.png": () => sonicBowPulling(0),
   "packs/resource_pack/textures/items/sonic_bow_pulling_1.png": () => sonicBowPulling(1),

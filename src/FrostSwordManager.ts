@@ -78,6 +78,13 @@ export class FrostSwordManager {
 
     health.setCurrentValue(Math.min(health.effectiveMax, health.currentValue + event.damage));
     frozen.bufferedDamage += event.damage;
+
+    // Any hit also gives a knockback impulse the instant it lands, well
+    // before the next scheduled tick() below would catch it - correcting
+    // position/velocity right here too closes that gap, so a hit while
+    // frozen doesn't visibly nudge the target at all.
+    frozen.entity.teleport(frozen.anchor);
+    frozen.entity.clearVelocity();
   };
 
   private isOnCooldown(target: Entity): boolean {
