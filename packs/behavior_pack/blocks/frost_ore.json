@@ -12,7 +12,7 @@
         "*": { "texture": "frost_ore", "render_method": "opaque" }
       },
       "minecraft:destructible_by_mining": { "seconds_to_destroy": 3.0 },
-      "minecraft:destructible_by_explosion": { "explosion_resistance": 15 },
+      "minecraft:destructible_by_explosion": false,
       "minecraft:map_color": "#7FC7E8",
       "minecraft:light_emission": 4,
       "minecraft:loot": "loot_tables/blocks/frost_ore.json",

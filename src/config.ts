@@ -3,8 +3,9 @@ export const NAMESPACE = "myaddon";
 export const Identifiers = {
   frostSword: `${NAMESPACE}:frost_sword`,
   frostShard: `${NAMESPACE}:frost_shard`,
-  frostCrystal: `${NAMESPACE}:frost_crystal`,
+  frostBlock: `${NAMESPACE}:frost_block`,
   frostOre: `${NAMESPACE}:frost_ore`,
+  deepslateFrostOre: `${NAMESPACE}:deepslate_frost_ore`,
   frostGolem: `${NAMESPACE}:frost_golem`,
   sonicBow: `${NAMESPACE}:sonic_bow`,
   echoCharge: `${NAMESPACE}:echo_charge`,
@@ -49,13 +50,16 @@ export const FrostGolemConfig = {
   attackPoseTicks: 10,
   /**
    * Scoreboard objective the entity_types target filter in frost_golem.json
-   * checks (`score < 1` = still targetable). A player fed a frost crystal
-   * gets a score of 1 here and every frost golem stops targeting them - a
-   * global "frost golems trust you" flag rather than a per-golem memory,
-   * since Bedrock's declarative target filter has no way to reference a
-   * specific golem-player relationship, only global entity state.
+   * checks (`score < 1` = still targetable). A player fed a frost shard, or
+   * who assembled a golem from a frost block + carved pumpkin, gets a score
+   * of 1 here and every frost golem stops targeting them - a global "frost
+   * golems trust you" flag rather than a per-golem memory, since Bedrock's
+   * declarative target filter has no way to reference a specific
+   * golem-player relationship, only global entity state.
    */
   trustScoreboardId: "myaddon_frost_trust",
+  /** The block, topped with a carved pumpkin, that spawns a frost golem. */
+  buildPumpkinBlockId: "minecraft:carved_pumpkin",
 } as const;
 
 export const SonicBowConfig = {

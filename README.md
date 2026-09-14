@@ -11,7 +11,7 @@ Minecraft-Bedrock-Addon mit Behavior Pack, Resource Pack und TypeScript-Skripten
 | Item   | `myaddon:frost_shard`  | Craftingmaterial, Drop von Erz und Golem |
 | Block  | `myaddon:frost_ore` / `myaddon:deepslate_frost_ore` | Erz (Stein-/Tiefenschiefer-Variante) mit eigener Loot Table, leichtem Leuchten und Skript-Effekt beim Abbau |
 | Entity | `myaddon:frost_golem`  | Feindlicher Mob, Form + Textur der echten Kupfergolem-Vorlage (blau eingefaerbt), spawnt nur in Schneebiomen, greift mit nach vorn gestreckten Armen an, Enrage-Phase unter 50 % Leben, greift auch andere aggressive Mobs an, bevorzugt aber Spieler |
-| Item   | `myaddon:frost_crystal`| Frostkristall: fuettert man ihn einem Frost-Golem, greift kein Frost-Golem mehr diesen Spieler an |
+| Block  | `myaddon:frost_block` | Frostblock: Vanillas Diamantblock, viel heller eingefaerbt. Mit Kuerbis obendrauf entsteht ein Frost-Golem |
 | Item   | `myaddon:sonic_bow`    | Schallbogen: verschiesst statt Pfeilen den Sonic Boom des Wardens |
 | Item   | `myaddon:echo_charge`  | Munition des Schallbogens |
 | Entity | `myaddon:sonic_boom`   | Unsichtbares Projektil (kein Pfeilmodell), nur der echte Sonic-Boom-Partikel des Wardens ist sichtbar |
@@ -54,18 +54,36 @@ wie `warden_hammer.png`/`warden_ingot.png`.
   Reichweite, wird der immer bevorzugt, unabhaengig davon ob ein naeherer
   aggressiver Mob da waere — erst wenn kein Spieler/Schneegolem in
   Reichweite ist, greift er stattdessen den naechsten aggressiven Mob an.
-- **Frostkristall-Vertrauen**: fuettert man einem Frost-Golem (Rechtsklick
-  mit `myaddon:frost_crystal` in der Hand) einen Frostkristall, greift
-  **kein** Frost-Golem mehr diesen Spieler an. Das ist bewusst ein
-  globales "Frost-Golems vertrauen dir"-Flag (per Scoreboard-Objective
-  `myaddon_frost_trust`, im Spieler-Eintrag der Ziel-Filter oben zusaetzlich
-  gegen `score < 1` geprueft) statt einer Erinnerung pro einzelnem Golem —
-  Bedrocks deklaratives Ziel-Filtersystem kann nur globalen Entity-Zustand
-  abfragen (Scoreboard, Familie, Health, ...), keine "dieser eine Golem
-  kennt genau diesen einen Spieler"-Beziehung. Der Kristall wird beim
-  Fuettern verbraucht; ist der Spieler schon vertraut, passiert nichts
-  (Kristall bleibt erhalten). Siehe
-  `FrostGolemManager.onPlayerInteractWithEntity`.
+- **Vertrauen gewinnen** — auf zwei Wegen, beide fuehren zum selben Ergebnis:
+  - **Fuettern**: Rechtsklick auf einen bestehenden Frost-Golem mit
+    `myaddon:frost_shard` in der Hand. Der Splitter wird dabei verbraucht.
+  - **Selbst bauen**: einen `myaddon:frost_block` hinlegen und einen
+    Kuerbis (`minecraft:carved_pumpkin`) direkt obendrauf setzen — genau wie
+    beim Bauen eines Schneegolems oder Eisengolems in Vanilla, nur mit
+    einem einzelnen Block statt einer ganzen Saeule/eines Kreuzes, so wie
+    gewuenscht. Beide Bloecke werden dabei verbraucht und ein
+    `myaddon:frost_golem` entsteht an der Stelle.
+
+  In beide Faellen greift **kein** Frost-Golem mehr diesen Spieler an. Das
+  ist bewusst ein globales "Frost-Golems vertrauen dir"-Flag (per
+  Scoreboard-Objective `myaddon_frost_trust`, im Spieler-Eintrag der
+  Ziel-Filter oben zusaetzlich gegen `score < 1` geprueft) statt einer
+  Erinnerung pro einzelnem Golem — Bedrocks deklaratives Ziel-Filtersystem
+  kann nur globalen Entity-Zustand abfragen (Scoreboard, Familie, Health,
+  ...), keine "dieser eine Golem kennt genau diesen einen Spieler"-
+  Beziehung. Ist der Spieler schon vertraut, passiert beim Fuettern nichts
+  (Splitter bleibt erhalten); Selbstbauen funktioniert trotzdem immer
+  (der Golem entsteht so oder so). Siehe
+  `FrostGolemManager.onPlayerInteractWithEntity` und
+  `FrostGolemManager.onPlayerPlaceBlock`.
+
+### Frostblock
+
+Textur ist Vanillas eigene `diamond_block.png`, pixelidentisch, komplett
+(nicht nur einzelne Pixel wie beim Frost-Erz) 55% Richtung Weiss
+aufgehellt — "viel heller" als das Original, wie gewuenscht. Rezept: 9x
+`myaddon:frost_shard` im 3x3-Vollmuster, wie bei Vanillas eigenem
+Diamantblock. Siehe `packs/behavior_pack/recipes/frost_block.json`.
 
 ### Frostschwert im Detail
 
@@ -146,6 +164,9 @@ Tiefenschiefer:
   laenger zum Abbauen: 4.5s statt 3.0s, wie bei Vanillas
   Tiefenschiefer-Erzen ueblich)
 
+Beide sind komplett **explosionsimmun** (`"minecraft:destructible_by_explosion": false`)
+— anders als normales Vanilla-Erz ueberleben sie also auch Creeper/TNT/etc.
+
 Beide werden von **derselben** Ader erzeugt (`features/frost_ore_feature.json`,
 zwei `replace_rules` — welcher Block entsteht, haengt nur davon ab, ob an
 der jeweiligen Position gerade Stein oder Tiefenschiefer ansteht) und sind
@@ -183,8 +204,9 @@ statische Dateien, nicht mehr Teil von `npm run textures`.
   ```
   (`S` = Eissplitter, `N` = Netherit-Schwert). Siehe
   `packs/behavior_pack/recipes/frost_sword.json`.
-- **Frostkristall**: 4x `myaddon:frost_shard` (formlos) am Crafting-Tisch
-  ergibt 1x `myaddon:frost_crystal`.
+- **Frostblock**: 9x `myaddon:frost_shard` im vollen 3x3-Muster am
+  Crafting-Tisch ergibt 1x `myaddon:frost_block` (siehe auch Abschnitt
+  "Frostblock" oben).
 - **Echo-Ladung** (Munition): 4x `minecraft:arrow` + 1x `minecraft:echo_shard`
   am Crafting-Tisch ergibt 4x `myaddon:echo_charge`.
 - **Warden-Barren**: am Crafting-Tisch, 3x3-Muster — 1x `minecraft:echo_shard`

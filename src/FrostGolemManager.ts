@@ -7,6 +7,7 @@ import {
   type EntityHitEntityAfterEvent,
   type EntityHurtAfterEvent,
   type PlayerInteractWithEntityAfterEvent,
+  type PlayerPlaceBlockAfterEvent,
 } from "@minecraft/server";
 import { FrostGolemConfig, Identifiers } from "./config";
 
@@ -17,9 +18,11 @@ import { FrostGolemConfig, Identifiers } from "./config";
  * arms-forward pose Iron Golems use, but driven by a custom entity property
  * instead of the iron golem's own hardcoded `variable.attack_animation_tick`
  * (that variable is populated by the engine for iron golems specifically and
- * isn't available to a custom entity) - and lets a player earn its trust by
- * feeding it a `myaddon:frost_crystal`, after which no frost golem targets
- * that player anymore (see `FrostGolemConfig.trustScoreboardId` for why this
+ * isn't available to a custom entity) - and lets a player earn its trust,
+ * either by feeding an existing golem a `myaddon:frost_shard` or by building
+ * one from a `myaddon:frost_block` topped with a carved pumpkin (like a
+ * vanilla snow/iron golem). Either way no frost golem targets that player
+ * anymore afterwards (see `FrostGolemConfig.trustScoreboardId` for why this
  * is a global flag rather than a per-golem memory).
  */
 export class FrostGolemManager {
@@ -40,6 +43,9 @@ export class FrostGolemManager {
       entityTypes: [Identifiers.frostGolem],
     });
     world.afterEvents.playerInteractWithEntity.subscribe(this.onPlayerInteractWithEntity);
+    world.afterEvents.playerPlaceBlock.subscribe(this.onPlayerPlaceBlock, {
+      blockTypes: [FrostGolemConfig.buildPumpkinBlockId],
+    });
   }
 
   private ensureTrustObjective(): void {
@@ -48,13 +54,14 @@ export class FrostGolemManager {
     }
   }
 
+  /** Feeding an existing golem a frost shard earns the same trust as building one. */
   private onPlayerInteractWithEntity = (event: PlayerInteractWithEntityAfterEvent): void => {
     if (event.target.typeId !== Identifiers.frostGolem) return;
 
     const player = event.player;
     const equippable = player.getComponent("minecraft:equippable");
     const held = equippable?.getEquipment(EquipmentSlot.Mainhand);
-    if (!equippable || held?.typeId !== Identifiers.frostCrystal) return;
+    if (!equippable || held?.typeId !== Identifiers.frostShard) return;
 
     if (this.isTrusted(player)) {
       player.sendMessage("§bDie Frost-Golems vertrauen dir bereits.");
@@ -68,11 +75,40 @@ export class FrostGolemManager {
       equippable.setEquipment(EquipmentSlot.Mainhand, undefined);
     }
 
-    world.scoreboard.getObjective(FrostGolemConfig.trustScoreboardId)?.setScore(player, 1);
+    this.grantTrust(player);
     event.target.dimension.spawnParticle("minecraft:snowflake_particle", event.target.location);
     event.target.dimension.playSound("random.levelup", event.target.location, { pitch: 1.4 });
     player.sendMessage("§bDie Frost-Golems greifen dich nun nicht mehr an.");
   };
+
+  /**
+   * A carved pumpkin placed directly on a frost block spawns a frost golem
+   * there - the same "build it like a snow/iron golem" idea, just with a
+   * single block instead of a taller stack/cross, as asked for. Both
+   * blocks are consumed, like vanilla's golems consume theirs.
+   */
+  private onPlayerPlaceBlock = (event: PlayerPlaceBlockAfterEvent): void => {
+    const base = event.block.below();
+    if (base?.typeId !== Identifiers.frostBlock) return;
+
+    const spawnLocation = event.block.location;
+    base.setType("minecraft:air");
+    event.block.setType("minecraft:air");
+
+    const golem = event.dimension.spawnEntity(Identifiers.frostGolem, {
+      x: spawnLocation.x + 0.5,
+      y: spawnLocation.y - 1,
+      z: spawnLocation.z + 0.5,
+    });
+
+    this.grantTrust(event.player);
+    event.dimension.spawnParticle("minecraft:snowflake_particle", golem.location);
+    event.player.sendMessage("§bDu hast einen Frost-Golem erschaffen. Er greift dich nicht an.");
+  };
+
+  private grantTrust(player: Player): void {
+    world.scoreboard.getObjective(FrostGolemConfig.trustScoreboardId)?.setScore(player, 1);
+  }
 
   private isTrusted(player: Player): boolean {
     const objective = world.scoreboard.getObjective(FrostGolemConfig.trustScoreboardId);
