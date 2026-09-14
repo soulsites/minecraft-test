@@ -143,7 +143,7 @@ pixelidentisch in Form und Farbe — aber anders als beim Frost-Golem/-Schwert
 wird hier **kein** Farbton umgemappt. Nur die Diamant-Kristall-Pixel (bei
 denen der hellste und dunkelste Farbkanal um mehr als 10 auseinanderliegen
 — Diamant-Pixel sind deutlich cyanstichig, Gesteins-Pixel praktisch neutral
-grau) werden 45% Richtung Weiss aufgehellt, bei ihrem urspruenglichen
+grau) werden 70% Richtung Weiss aufgehellt, bei ihrem urspruenglichen
 Blauton. Alle restlichen (grauen) Pixel werden 1:1 unveraendert
 uebernommen — das Gestein bleibt also echtes Grau/Blaugrau, die Splitter
 sind schlicht ein helleres Blau als im Original. Beide Texturen sind

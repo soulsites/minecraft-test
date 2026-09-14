@@ -176,7 +176,7 @@ function frostShard() {
  * they're vanilla's own diamond_ore.png / deepslate_diamond_ore.png,
  * pixel-for-pixel, with *only* the diamond-crystal pixels (max channel -
  * min channel > 10 - the crystal pixels are distinctly cyan, stone pixels
- * are near-neutral grey) blended 45% of the way towards white, keeping
+ * are near-neutral grey) blended 70% of the way towards white, keeping
  * their original hue rather than remapping to a different palette. Every
  * grey/near-grey stone pixel is copied through completely unchanged, so
  * the rock itself still looks like real stone/deepslate. Checked in as
