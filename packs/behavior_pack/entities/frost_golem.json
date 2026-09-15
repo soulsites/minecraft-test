@@ -43,12 +43,17 @@
       "minecraft:interact": {
         "interactions": [
           {
-            "on_interact": { "event": "myaddon:calm" },
-            "items": ["myaddon:frost_shard"],
+            "on_interact": {
+              "filters": {
+                "all_of": [
+                  { "test": "is_family", "subject": "other", "value": "player" },
+                  { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "myaddon:frost_shard" }
+                ]
+              }
+            },
             "use_item": false,
             "swing": true,
-            "particle_on_start": { "particle_type": "minecraft:snowflake_particle" },
-            "play_sounds": ["random.levelup"],
+            "play_sounds": "random.levelup",
             "interact_text": "action.interact.feed"
           }
         ]

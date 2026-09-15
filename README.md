@@ -81,15 +81,24 @@ statt der vorher frei gewaehlten Hex-Farben (`base_color`/`overlay_color`).
   Skript war, nicht dieser Filter; er wurde deshalb jetzt guten Gewissens
   wieder scharf geschaltet. Siehe `FrostGolemManager.onPlayerInteractWithEntity`
   und `FrostGolemManager.onPlayerPlaceBlock`.
-  **Wichtiger Fix:** Fuettern hat vorher gar nicht reagiert — vermutlich weil
-  ein rein feindlicher Mob ohne `minecraft:interact`-Komponente Rechtsklick
-  clientseitig als Angriffsversuch behandelt, nicht als Interaktion, egal was
-  das Skript dafuer abonniert hat. `frost_golem.json` hat jetzt eine
-  `minecraft:interact`-Komponente (nur fuer `myaddon:frost_shard`, ohne den
-  Splitter selbst zu verbrauchen — das macht weiterhin das Skript), die
-  Rechtsklick ueberhaupt erst als Interaktion "freischaltet" und dabei auch
-  einen "Geben"-Hinweistext (`action.interact.feed`, dieselbe Vanilla-
-  Uebersetzung wie beim Tier fuettern) und Partikel/Sound liefert.
+  **Wichtiger Fix:** Fuettern hat vorher gar nicht reagiert — ein rein
+  feindlicher Mob ohne `minecraft:interact`-Komponente behandelt Rechtsklick
+  clientseitig als Angriffsversuch statt als Interaktion, egal was das
+  Skript abonniert. `frost_golem.json` hat jetzt eine
+  `minecraft:interact`-Komponente, die Rechtsklick ueberhaupt erst als
+  Interaktion "freischaltet". **v1.0.53-Korrektur:** die zuerst verbaute
+  Komponente war leider selbst falsch (Felder `items` und
+  `particle_on_start` existieren in Bedrock gar nicht — frei erfunden, ohne
+  echtes Vorbild gegengeprueft, deshalb hat der erste Versuch nichts
+  bewirkt). Jetzt anhand echter Vanilla-Dateien verifiziert
+  (`piglin.json`, `cow.json`, `sheep.json` aus bedrock-samples): der
+  Item-Check laeuft ueber `on_interact.filters` mit einem
+  `has_equipment`-Test (Hand-Slot = `myaddon:frost_shard`), nicht ueber ein
+  `items`-Array; `play_sounds` ist ein einzelner String, kein Array. Das
+  Verbrauchen des Splitters selbst macht weiterhin das Skript
+  (`FrostGolemManager.onPlayerInteractWithEntity`), die JSON-Komponente
+  liefert nur den "Geben"-Hinweistext (`action.interact.feed`) und
+  Sound/Animation.
   **Weiterhin nicht umgesetzt:** ein sichtbar in der Hand gehaltener
   Splitter — dafuer gibt es kein belastbares Vorbild (der echte Kupfergolem
   traegt seine Blume nicht in der Hand, sondern ueber eine komplett
