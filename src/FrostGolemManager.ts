@@ -5,6 +5,7 @@ import {
   type Entity,
   type EntityHitEntityAfterEvent,
   type EntityHurtAfterEvent,
+  type EntitySpawnAfterEvent,
   type EntityTameableComponent,
   type PlayerPlaceBlockAfterEvent,
 } from "@minecraft/server";
@@ -48,7 +49,27 @@ export class FrostGolemManager {
     world.afterEvents.playerPlaceBlock.subscribe(this.onPlayerPlaceBlock, {
       blockTypes: [FrostGolemConfig.buildPumpkinBlockId],
     });
+    world.afterEvents.entitySpawn.subscribe(this.onEntitySpawn);
   }
+
+  /**
+   * `runtime_identifier: "minecraft:zombie"` in frost_golem.json (reused so
+   * the engine still handles baseline mechanics like hurt knockback and
+   * hitboxes for us) makes death messages say "Zombie" instead of
+   * "Frostgolem", ignoring the entity's own `entity.myaddon:frost_golem.name`
+   * lang entry - Bedrock's kill-feed text is keyed off the runtime type, not
+   * the custom identifier. Giving the entity a name tag sidesteps this: a
+   * named entity's death message uses that name instead of the type name,
+   * exactly like naming a zombie with a name tag changes its death message.
+   * Only sets a default - a player's own name tag (via nameable) is left
+   * alone.
+   */
+  private onEntitySpawn = (event: EntitySpawnAfterEvent): void => {
+    const golem = event.entity;
+    if (golem.isValid && golem.typeId === Identifiers.frostGolem && !golem.nameTag) {
+      golem.nameTag = "Frostgolem";
+    }
+  };
 
   /**
    * Feeding a frost shard is handled entirely by the `minecraft:tameable`
