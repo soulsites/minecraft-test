@@ -40,23 +40,10 @@
         "avoid_damage_blocks": true
       },
       "minecraft:movement.basic": {},
-      "minecraft:interact": {
-        "interactions": [
-          {
-            "on_interact": {
-              "filters": {
-                "all_of": [
-                  { "test": "is_family", "subject": "other", "value": "player" },
-                  { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "myaddon:frost_shard" }
-                ]
-              }
-            },
-            "use_item": true,
-            "swing": true,
-            "play_sounds": "random.levelup",
-            "interact_text": "action.interact.feed"
-          }
-        ]
+      "minecraft:tameable": {
+        "probability": 1.0,
+        "tame_items": "myaddon:frost_shard",
+        "tame_event": { "event": "myaddon:on_tame", "target": "self" }
       },
       "minecraft:behavior.float": { "priority": 0 },
       "minecraft:behavior.melee_attack": { "priority": 2, "track_target": true },
@@ -75,7 +62,7 @@
                     { "test": "is_family", "subject": "other", "value": "snowgolem" }
                   ]
                 },
-                { "test": "has_tag", "subject": "other", "value": "myaddon_frost_trusted", "operator": "!=" }
+                { "test": "is_owner", "subject": "other", "value": true, "operator": "!=" }
               ]
             },
             "max_dist": 24
@@ -97,7 +84,8 @@
     },
     "events": {
       "myaddon:enrage": { "add": { "component_groups": ["myaddon:enraged"] } },
-      "myaddon:calm": { "remove": { "component_groups": ["myaddon:enraged"] } }
+      "myaddon:calm": { "remove": { "component_groups": ["myaddon:enraged"] } },
+      "myaddon:on_tame": {}
     }
   }
 }

@@ -58,7 +58,9 @@ statt der vorher frei gewaehlten Hex-Farben (`base_color`/`overlay_color`).
   Reichweite, wird der immer bevorzugt, unabhaengig davon ob ein naeherer
   aggressiver Mob da waere — erst wenn kein Spieler/Schneegolem in
   Reichweite ist, greift er stattdessen den naechsten aggressiven Mob an.
-- **Vertrauen gewinnen** — auf zwei Wegen, beide fuehren zum selben Ergebnis:
+- **Vertrauen gewinnen** — pro Golem einzeln, nicht global. Wer einem
+  bestimmten Frost-Golem vertraut wird, bleibt fuer alle *anderen*
+  Frost-Golems weiterhin ein normales Angriffsziel:
   - **Fuettern**: Rechtsklick auf einen bestehenden Frost-Golem mit
     `myaddon:frost_shard` in der Hand. Der Splitter wird dabei verbraucht.
   - **Selbst bauen**: einen `myaddon:frost_block` hinlegen und einen
@@ -66,61 +68,36 @@ statt der vorher frei gewaehlten Hex-Farben (`base_color`/`overlay_color`).
     beim Bauen eines Schneegolems oder Eisengolems in Vanilla, nur mit
     einem einzelnen Block statt einer ganzen Saeule/eines Kreuzes, so wie
     gewuenscht. Beide Bloecke werden dabei verbraucht und ein
-    `myaddon:frost_golem` entsteht an der Stelle.
+    `myaddon:frost_golem` entsteht an der Stelle, das direkt dem Erbauer
+    "gehoert".
 
-  Beides gibt dem Spieler einen Tag (`myaddon_frost_trusted`) — bewusst ein
-  globales "Frost-Golems vertrauen dir"-Flag statt einer Erinnerung pro
-  einzelnem Golem, da Bedrocks deklaratives Ziel-Filtersystem nur globalen
-  Entity-Zustand abfragen kann (Tags, Familie, Health, ...), keine "dieser
-  eine Golem kennt genau diesen einen Spieler"-Beziehung.
-  **v1.0.55-Korrektur:** urspruenglich lief das ueber ein Scoreboard-
-  Objective und einen `"test": "score"`-Ziel-Filter. Das Skript hat das
-  Vertrauen nachweislich korrekt vergeben (Fuettern eines bereits
-  vertrauten Spielers meldete "vertraut dir bereits"), trotzdem haben
-  Golems weiter angegriffen — der Score-Filter hat also nicht wie erwartet
-  gewirkt. Da sich dieser Filter (anders als alles andere in dieser Datei)
-  in keiner echten Vanilla-Datei als Vorbild finden liess, um ihn
-  gegenzupruefen, wurde die ganze Mechanik auf Spieler-Tags umgestellt:
-  `player.addTag`/`player.hasTag` im Skript, und im Ziel-Filter
-  `"test": "has_tag", "operator": "!="` — derselbe Operator-Stil, der schon
-  beim `is_family`-Filter fuer "kein anderer Frost-Golem" funktioniert.
-  Kein Scoreboard-Objective mehr, das erst zur richtigen Zeit beim
-  Weltstart angelegt werden muss. Siehe
-  `FrostGolemManager.onPlayerInteractWithEntity` und
-  `FrostGolemManager.onPlayerPlaceBlock`.
-  **Wichtiger Fix:** Fuettern hat vorher gar nicht reagiert — ein rein
-  feindlicher Mob ohne `minecraft:interact`-Komponente behandelt Rechtsklick
-  clientseitig als Angriffsversuch statt als Interaktion, egal was das
-  Skript abonniert. `frost_golem.json` hat jetzt eine
-  `minecraft:interact`-Komponente, die Rechtsklick ueberhaupt erst als
-  Interaktion "freischaltet". **v1.0.53-Korrektur:** die zuerst verbaute
-  Komponente war leider selbst falsch (Felder `items` und
-  `particle_on_start` existieren in Bedrock gar nicht — frei erfunden, ohne
-  echtes Vorbild gegengeprueft, deshalb hat der erste Versuch nichts
-  bewirkt). Jetzt anhand echter Vanilla-Dateien verifiziert
-  (`piglin.json`, `cow.json`, `sheep.json` aus bedrock-samples): der
-  Item-Check laeuft ueber `on_interact.filters` mit einem
-  `has_equipment`-Test (Hand-Slot = `myaddon:frost_shard`), nicht ueber ein
-  `items`-Array; `play_sounds` ist ein einzelner String, kein Array. Das
-  Verbrauchen des Splitters selbst macht weiterhin das Skript
-  (`FrostGolemManager.onPlayerInteractWithEntity`), die JSON-Komponente
-  liefert nur den "Geben"-Hinweistext (`action.interact.feed`) und
-  Sound/Animation.
-  **v1.0.54-Korrektur:** der "Geben"-Hinweis erschien zwar schon (die
-  Filter matchten), aber Fuettern hat trotzdem nichts bewirkt — vermutlich
-  weil `PlayerInteractWithEntityAfterEvent` laut den Typdefinitionen erst
-  nach einer "erfolgreichen" Interaktion feuert, und ein reiner
-  Sound/Swing-Effekt ohne echten Zustandswechsel (anders als beim Muh-Kuh-
-  Melken mit `transform_to_item` oder Schaf-Scheren mit `spawn_items`)
-  offenbar nicht als "erfolgreich" zaehlt. `use_item` steht jetzt auf
-  `true`, genau wie bei Vanillas eigenen Fuetter-Interaktionen — die
-  Engine verbraucht den Splitter jetzt selbst, das Skript liest nur noch
-  `event.beforeItemStack` aus, um zu bestaetigen, was verfuettert wurde,
-  und vergibt darauf das Vertrauen.
+  Beides macht den Spieler technisch zum Besitzer *dieses einen* Golems
+  ueber `frost_golem.json`s `minecraft:tameable`-Komponente — demselben
+  Mechanismus, mit dem Vanilla-Woelfe per Knochen gezaehmt werden. Der
+  Ziel-Filter prueft `"test": "is_owner", "operator": "!="`: ein Golem
+  greift also weiterhin jeden Spieler an, der nicht genau sein eigener
+  Besitzer ist. Siehe `FrostGolemManager.onTame` (reagiert auf das
+  `tame_event` fuer Partikel/Sound/Chat-Nachricht) und
+  `FrostGolemManager.onPlayerPlaceBlock` (ruft `tameable.tame(player)`
+  direkt auf, wenn der Golem gebaut statt gefuettert wird).
   **Zum Beschwoeren/Summon:** ein per `/summon` oder Spawnei erzeugter
-  Golem ist absichtlich feindlich - niemand hat ihm bis dahin vertraut.
-  Nur Fuettern oder der Bau-Weg (Frostblock + Kuerbis) vergeben Vertrauen
-  automatisch an den jeweiligen Spieler.
+  Golem gehoert niemandem und ist deshalb absichtlich feindlich zu allen
+  Spielern. Nur Fuettern oder der Bau-Weg machen genau diesen einen Golem
+  zahm gegenueber genau dem einen Spieler.
+
+  **Verlauf bis hierhin** (drei Fehlschlaege vor der jetzigen Loesung,
+  jeweils erst beim echten Testen aufgefallen): zuerst ein
+  `minecraft:interact` mit frei erfundenen, nicht existierenden Feldern
+  (`items`, `particle_on_start`) — wirkungslos. Dann derselbe
+  Interact-Ansatz mit korrektem Schema (verifiziert gegen `piglin.json`,
+  `cow.json`, `sheep.json`), aber weiterhin ohne Effekt, weil
+  `PlayerInteractWithEntityAfterEvent` erst nach einer "erfolgreichen"
+  Interaktion feuert und reiner Sound/Swing offenbar nicht genuegte. Dann
+  ein global vergebenes Vertrauen (erst Scoreboard, dann Spieler-Tag) —
+  technisch hat es funktioniert, war aber die falsche Mechanik: es sollte
+  nie "alle Golems vertrauen mir", sondern immer nur "dieser eine Golem
+  vertraut mir". Jetzt geloest ueber echten Besitz pro Entity statt
+  irgendeinem globalen Flag.
   **Weiterhin nicht umgesetzt:** ein sichtbar in der Hand gehaltener
   Splitter — dafuer gibt es kein belastbares Vorbild (der echte Kupfergolem
   traegt seine Blume nicht in der Hand, sondern ueber eine komplett

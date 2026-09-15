@@ -1,11 +1,11 @@
 import {
-  Player,
   system,
   world,
+  type DataDrivenEntityTriggerAfterEvent,
   type Entity,
   type EntityHitEntityAfterEvent,
   type EntityHurtAfterEvent,
-  type PlayerInteractWithEntityAfterEvent,
+  type EntityTameableComponent,
   type PlayerPlaceBlockAfterEvent,
 } from "@minecraft/server";
 import { FrostGolemConfig, Identifiers } from "./config";
@@ -17,12 +17,14 @@ import { FrostGolemConfig, Identifiers } from "./config";
  * arms-forward pose Iron Golems use, but driven by a custom entity property
  * instead of the iron golem's own hardcoded `variable.attack_animation_tick`
  * (that variable is populated by the engine for iron golems specifically and
- * isn't available to a custom entity) - and lets a player earn its trust,
- * either by feeding an existing golem a `myaddon:frost_shard` or by building
- * one from a `myaddon:frost_block` topped with a carved pumpkin (like a
- * vanilla snow/iron golem). Either way no frost golem targets that player
- * anymore afterwards (see `FrostGolemConfig.trustScoreboardId` for why this
- * is a global flag rather than a per-golem memory).
+ * isn't available to a custom entity) - and lets a player earn *that specific
+ * golem's* trust, either by feeding it a `myaddon:frost_shard` or by building
+ * it from a `myaddon:frost_block` topped with a carved pumpkin (like a
+ * vanilla snow/iron golem). This rides on `frost_golem.json`'s own
+ * `minecraft:tameable` component (the same mechanism wolves use for bones) so
+ * each golem remembers its own owner via the engine's real per-entity
+ * ownership - not a global flag, so other, un-fed golems keep attacking that
+ * player as expected.
  */
 export class FrostGolemManager {
   /** Ids of golems currently in the enraged component group. */
@@ -39,40 +41,39 @@ export class FrostGolemManager {
     world.afterEvents.entityHitEntity.subscribe(this.onEntityHitEntity, {
       entityTypes: [Identifiers.frostGolem],
     });
-    world.afterEvents.playerInteractWithEntity.subscribe(this.onPlayerInteractWithEntity);
+    world.afterEvents.dataDrivenEntityTrigger.subscribe(this.onTame, {
+      entityTypes: [Identifiers.frostGolem],
+      eventTypes: [FrostGolemConfig.tameEventName],
+    });
     world.afterEvents.playerPlaceBlock.subscribe(this.onPlayerPlaceBlock, {
       blockTypes: [FrostGolemConfig.buildPumpkinBlockId],
     });
   }
 
   /**
-   * Feeding an existing golem a frost shard earns the same trust as building
-   * one. The actual shard consumption is handled by `frost_golem.json`'s
-   * `minecraft:interact` component (`use_item: true`) - the same way vanilla
-   * feeds a cow or sheds a sheep - so `event.beforeItemStack` here is just
-   * confirming what was consumed, not doing the consuming itself.
+   * Feeding a frost shard is handled entirely by the `minecraft:tameable`
+   * component (item consumption, the interact prompt, setting ownership) -
+   * this just reacts to the `tame_event` it fires afterwards for feedback.
    */
-  private onPlayerInteractWithEntity = (event: PlayerInteractWithEntityAfterEvent): void => {
-    if (event.target.typeId !== Identifiers.frostGolem) return;
-    if (event.beforeItemStack?.typeId !== Identifiers.frostShard) return;
+  private onTame = (event: DataDrivenEntityTriggerAfterEvent): void => {
+    const golem = event.entity;
+    if (!golem.isValid) return;
 
-    const player = event.player;
-    if (this.isTrusted(player)) {
-      player.sendMessage("§bDie Frost-Golems vertrauen dir bereits.");
-      return;
-    }
+    const owner = this.tameableComponent(golem)?.tamedToPlayer;
+    if (!owner) return;
 
-    this.grantTrust(player);
-    event.target.dimension.spawnParticle("minecraft:snowflake_particle", event.target.location);
-    event.target.dimension.playSound("random.levelup", event.target.location, { pitch: 1.4 });
-    player.sendMessage("§bDie Frost-Golems greifen dich nun nicht mehr an.");
+    golem.dimension.spawnParticle("minecraft:snowflake_particle", golem.location);
+    golem.dimension.playSound("random.levelup", golem.location, { pitch: 1.4 });
+    owner.sendMessage("§bDieser Frost-Golem greift dich nun nicht mehr an.");
   };
 
   /**
    * A carved pumpkin placed directly on a frost block spawns a frost golem
    * there - the same "build it like a snow/iron golem" idea, just with a
    * single block instead of a taller stack/cross, as asked for. Both
-   * blocks are consumed, like vanilla's golems consume theirs.
+   * blocks are consumed, like vanilla's golems consume theirs, and the
+   * builder becomes this specific golem's owner via the same tameable
+   * component feeding uses.
    */
   private onPlayerPlaceBlock = (event: PlayerPlaceBlockAfterEvent): void => {
     const base = event.block.below();
@@ -88,17 +89,13 @@ export class FrostGolemManager {
       z: spawnLocation.z + 0.5,
     });
 
-    this.grantTrust(event.player);
+    this.tameableComponent(golem)?.tame(event.player);
     event.dimension.spawnParticle("minecraft:snowflake_particle", golem.location);
     event.player.sendMessage("§bDu hast einen Frost-Golem erschaffen. Er greift dich nicht an.");
   };
 
-  private grantTrust(player: Player): void {
-    player.addTag(FrostGolemConfig.trustTagId);
-  }
-
-  private isTrusted(player: Player): boolean {
-    return player.hasTag(FrostGolemConfig.trustTagId);
+  private tameableComponent(golem: Entity): EntityTameableComponent | undefined {
+    return golem.getComponent("minecraft:tameable");
   }
 
   private onEntityHitEntity = (event: EntityHitEntityAfterEvent): void => {
