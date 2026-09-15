@@ -99,6 +99,21 @@ statt der vorher frei gewaehlten Hex-Farben (`base_color`/`overlay_color`).
   (`FrostGolemManager.onPlayerInteractWithEntity`), die JSON-Komponente
   liefert nur den "Geben"-Hinweistext (`action.interact.feed`) und
   Sound/Animation.
+  **v1.0.54-Korrektur:** der "Geben"-Hinweis erschien zwar schon (die
+  Filter matchten), aber Fuettern hat trotzdem nichts bewirkt — vermutlich
+  weil `PlayerInteractWithEntityAfterEvent` laut den Typdefinitionen erst
+  nach einer "erfolgreichen" Interaktion feuert, und ein reiner
+  Sound/Swing-Effekt ohne echten Zustandswechsel (anders als beim Muh-Kuh-
+  Melken mit `transform_to_item` oder Schaf-Scheren mit `spawn_items`)
+  offenbar nicht als "erfolgreich" zaehlt. `use_item` steht jetzt auf
+  `true`, genau wie bei Vanillas eigenen Fuetter-Interaktionen — die
+  Engine verbraucht den Splitter jetzt selbst, das Skript liest nur noch
+  `event.beforeItemStack` aus, um zu bestaetigen, was verfuettert wurde,
+  und vergibt darauf das Vertrauen.
+  **Zum Beschwoeren/Summon:** ein per `/summon` oder Spawnei erzeugter
+  Golem ist absichtlich feindlich - niemand hat ihm bis dahin vertraut.
+  Nur Fuettern oder der Bau-Weg (Frostblock + Kuerbis) vergeben Vertrauen
+  automatisch an den jeweiligen Spieler.
   **Weiterhin nicht umgesetzt:** ein sichtbar in der Hand gehaltener
   Splitter — dafuer gibt es kein belastbares Vorbild (der echte Kupfergolem
   traegt seine Blume nicht in der Hand, sondern ueber eine komplett

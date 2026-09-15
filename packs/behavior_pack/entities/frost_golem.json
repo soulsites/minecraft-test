@@ -51,7 +51,7 @@
                 ]
               }
             },
-            "use_item": false,
+            "use_item": true,
             "swing": true,
             "play_sounds": "random.levelup",
             "interact_text": "action.interact.feed"

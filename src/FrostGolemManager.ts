@@ -1,5 +1,4 @@
 import {
-  EquipmentSlot,
   Player,
   system,
   world,
@@ -60,25 +59,21 @@ export class FrostGolemManager {
     }
   }
 
-  /** Feeding an existing golem a frost shard earns the same trust as building one. */
+  /**
+   * Feeding an existing golem a frost shard earns the same trust as building
+   * one. The actual shard consumption is handled by `frost_golem.json`'s
+   * `minecraft:interact` component (`use_item: true`) - the same way vanilla
+   * feeds a cow or sheds a sheep - so `event.beforeItemStack` here is just
+   * confirming what was consumed, not doing the consuming itself.
+   */
   private onPlayerInteractWithEntity = (event: PlayerInteractWithEntityAfterEvent): void => {
     if (event.target.typeId !== Identifiers.frostGolem) return;
+    if (event.beforeItemStack?.typeId !== Identifiers.frostShard) return;
 
     const player = event.player;
-    const equippable = player.getComponent("minecraft:equippable");
-    const held = equippable?.getEquipment(EquipmentSlot.Mainhand);
-    if (!equippable || held?.typeId !== Identifiers.frostShard) return;
-
     if (this.isTrusted(player)) {
       player.sendMessage("§bDie Frost-Golems vertrauen dir bereits.");
       return;
-    }
-
-    if (held.amount > 1) {
-      held.amount -= 1;
-      equippable.setEquipment(EquipmentSlot.Mainhand, held);
-    } else {
-      equippable.setEquipment(EquipmentSlot.Mainhand, undefined);
     }
 
     this.grantTrust(player);
