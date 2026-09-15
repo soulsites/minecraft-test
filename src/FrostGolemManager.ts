@@ -29,14 +29,6 @@ export class FrostGolemManager {
   private readonly enraged = new Set<string>();
 
   public register(): void {
-    // Mutating world state (like the scoreboard) at script-load time, before
-    // the world has actually finished loading, can throw - and since this
-    // was the first .register() called in main.ts, that exception used to
-    // abort every registration after it too (sonic bow, frost sword, hammer
-    // menu), not just this one. system.run() defers it to the first tick
-    // once the world is definitely ready.
-    system.run(() => this.ensureTrustObjective());
-
     world.afterEvents.entityHurt.subscribe(this.onEntityHurt, {
       entityTypes: [Identifiers.frostGolem],
     });
@@ -51,12 +43,6 @@ export class FrostGolemManager {
     world.afterEvents.playerPlaceBlock.subscribe(this.onPlayerPlaceBlock, {
       blockTypes: [FrostGolemConfig.buildPumpkinBlockId],
     });
-  }
-
-  private ensureTrustObjective(): void {
-    if (!world.scoreboard.getObjective(FrostGolemConfig.trustScoreboardId)) {
-      world.scoreboard.addObjective(FrostGolemConfig.trustScoreboardId);
-    }
   }
 
   /**
@@ -108,12 +94,11 @@ export class FrostGolemManager {
   };
 
   private grantTrust(player: Player): void {
-    world.scoreboard.getObjective(FrostGolemConfig.trustScoreboardId)?.setScore(player, 1);
+    player.addTag(FrostGolemConfig.trustTagId);
   }
 
   private isTrusted(player: Player): boolean {
-    const objective = world.scoreboard.getObjective(FrostGolemConfig.trustScoreboardId);
-    return (objective?.getScore(player) ?? 0) >= 1;
+    return player.hasTag(FrostGolemConfig.trustTagId);
   }
 
   private onEntityHitEntity = (event: EntityHitEntityAfterEvent): void => {

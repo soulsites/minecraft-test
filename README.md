@@ -68,19 +68,26 @@ statt der vorher frei gewaehlten Hex-Farben (`base_color`/`overlay_color`).
     gewuenscht. Beide Bloecke werden dabei verbraucht und ein
     `myaddon:frost_golem` entsteht an der Stelle.
 
-  Beides traegt den Spieler in ein globales Scoreboard-Objective
-  (`myaddon_frost_trust`) ein — bewusst ein globales "Frost-Golems
-  vertrauen dir"-Flag statt einer Erinnerung pro einzelnem Golem, da
-  Bedrocks deklaratives Ziel-Filtersystem nur globalen Entity-Zustand
-  abfragen kann (Scoreboard, Familie, Health, ...), keine "dieser eine
-  Golem kennt genau diesen einen Spieler"-Beziehung.
-  Der Ziel-Filter in `frost_golem.json` prueft dieses Scoreboard jetzt auch
-  tatsaechlich (`"test": "score", "operator": "<", "value": 1`) — nach dem
-  Total-Ausfall in v1.0.45–v1.0.47 (siehe "Bekannte Probleme") stellte sich
-  heraus, dass die eigentliche Ursache eine Registrierungsreihenfolge im
-  Skript war, nicht dieser Filter; er wurde deshalb jetzt guten Gewissens
-  wieder scharf geschaltet. Siehe `FrostGolemManager.onPlayerInteractWithEntity`
-  und `FrostGolemManager.onPlayerPlaceBlock`.
+  Beides gibt dem Spieler einen Tag (`myaddon_frost_trusted`) — bewusst ein
+  globales "Frost-Golems vertrauen dir"-Flag statt einer Erinnerung pro
+  einzelnem Golem, da Bedrocks deklaratives Ziel-Filtersystem nur globalen
+  Entity-Zustand abfragen kann (Tags, Familie, Health, ...), keine "dieser
+  eine Golem kennt genau diesen einen Spieler"-Beziehung.
+  **v1.0.55-Korrektur:** urspruenglich lief das ueber ein Scoreboard-
+  Objective und einen `"test": "score"`-Ziel-Filter. Das Skript hat das
+  Vertrauen nachweislich korrekt vergeben (Fuettern eines bereits
+  vertrauten Spielers meldete "vertraut dir bereits"), trotzdem haben
+  Golems weiter angegriffen — der Score-Filter hat also nicht wie erwartet
+  gewirkt. Da sich dieser Filter (anders als alles andere in dieser Datei)
+  in keiner echten Vanilla-Datei als Vorbild finden liess, um ihn
+  gegenzupruefen, wurde die ganze Mechanik auf Spieler-Tags umgestellt:
+  `player.addTag`/`player.hasTag` im Skript, und im Ziel-Filter
+  `"test": "has_tag", "operator": "!="` — derselbe Operator-Stil, der schon
+  beim `is_family`-Filter fuer "kein anderer Frost-Golem" funktioniert.
+  Kein Scoreboard-Objective mehr, das erst zur richtigen Zeit beim
+  Weltstart angelegt werden muss. Siehe
+  `FrostGolemManager.onPlayerInteractWithEntity` und
+  `FrostGolemManager.onPlayerPlaceBlock`.
   **Wichtiger Fix:** Fuettern hat vorher gar nicht reagiert — ein rein
   feindlicher Mob ohne `minecraft:interact`-Komponente behandelt Rechtsklick
   clientseitig als Angriffsversuch statt als Interaktion, egal was das

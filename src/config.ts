@@ -49,15 +49,22 @@ export const FrostGolemConfig = {
   /** How long the arms-forward pose holds after a melee hit lands, in ticks. */
   attackPoseTicks: 10,
   /**
-   * Scoreboard objective the entity_types target filter in frost_golem.json
-   * checks (`score < 1` = still targetable). A player fed a frost shard, or
-   * who assembled a golem from a frost block + carved pumpkin, gets a score
-   * of 1 here and every frost golem stops targeting them - a global "frost
-   * golems trust you" flag rather than a per-golem memory, since Bedrock's
-   * declarative target filter has no way to reference a specific
+   * Player tag the entity_types target filter in frost_golem.json checks
+   * (`has_tag` != this value = still targetable). A player fed a frost
+   * shard, or who assembled a golem from a frost block + carved pumpkin,
+   * gets this tag and every frost golem stops targeting them - a global
+   * "frost golems trust you" flag rather than a per-golem memory, since
+   * Bedrock's declarative target filter has no way to reference a specific
    * golem-player relationship, only global entity state.
+   *
+   * A scoreboard-score filter was tried first and did not work reliably
+   * (confirmed by testing: the player was already marked trusted by script,
+   * yet golems kept attacking) - tags are a simpler, better-precedented
+   * filter mechanism (the same `operator: "!="` pattern already used for
+   * `is_family` below) and don't need a scoreboard objective that has to be
+   * created at just the right point in the world's startup sequence.
    */
-  trustScoreboardId: "myaddon_frost_trust",
+  trustTagId: "myaddon_frost_trusted",
   /** The block, topped with a carved pumpkin, that spawns a frost golem. */
   buildPumpkinBlockId: "minecraft:carved_pumpkin",
 } as const;

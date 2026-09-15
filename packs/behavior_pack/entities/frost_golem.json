@@ -75,7 +75,7 @@
                     { "test": "is_family", "subject": "other", "value": "snowgolem" }
                   ]
                 },
-                { "test": "score", "subject": "other", "domain": "myaddon_frost_trust", "operator": "<", "value": 1 }
+                { "test": "has_tag", "subject": "other", "value": "myaddon_frost_trusted", "operator": "!=" }
               ]
             },
             "max_dist": 24
