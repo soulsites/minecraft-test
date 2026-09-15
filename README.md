@@ -81,16 +81,19 @@ statt der vorher frei gewaehlten Hex-Farben (`base_color`/`overlay_color`).
   Skript war, nicht dieser Filter; er wurde deshalb jetzt guten Gewissens
   wieder scharf geschaltet. Siehe `FrostGolemManager.onPlayerInteractWithEntity`
   und `FrostGolemManager.onPlayerPlaceBlock`.
-  **Nicht umgesetzt:** ein natives "Geben"-Interaktions-Label (ueber
-  `minecraft:interact`) und ein sichtbar in der Hand gehaltener Splitter.
-  Fuer Letzteres gibt es kein belastbares Vorbild — der echte Kupfergolem
-  haelt seine Blume nicht in der Hand, sondern traegt sie ueber eine
-  komplett separate, fest gebackene zweite Geometrie auf dem Kopf
-  (`geometry.copper_golem.flower`); ein generisches "haelt ein beliebiges
-  Item in der Hand" gibt es fuer eigene Mobs so nicht nachweisbar. Bewusst
-  nicht riskiert, kurz nach dem letzten Ausfall durch unverifizierte
-  Bedrock-Schemata — auf Wunsch bauen wir das als naechstes einzeln und
-  vorsichtig getestet nach.
+  **Wichtiger Fix:** Fuettern hat vorher gar nicht reagiert — vermutlich weil
+  ein rein feindlicher Mob ohne `minecraft:interact`-Komponente Rechtsklick
+  clientseitig als Angriffsversuch behandelt, nicht als Interaktion, egal was
+  das Skript dafuer abonniert hat. `frost_golem.json` hat jetzt eine
+  `minecraft:interact`-Komponente (nur fuer `myaddon:frost_shard`, ohne den
+  Splitter selbst zu verbrauchen — das macht weiterhin das Skript), die
+  Rechtsklick ueberhaupt erst als Interaktion "freischaltet" und dabei auch
+  einen "Geben"-Hinweistext (`action.interact.feed`, dieselbe Vanilla-
+  Uebersetzung wie beim Tier fuettern) und Partikel/Sound liefert.
+  **Weiterhin nicht umgesetzt:** ein sichtbar in der Hand gehaltener
+  Splitter — dafuer gibt es kein belastbares Vorbild (der echte Kupfergolem
+  traegt seine Blume nicht in der Hand, sondern ueber eine komplett
+  separate, fest gebackene zweite Geometrie auf dem Kopf).
 
 ### Frostblock
 
@@ -99,6 +102,10 @@ Textur ist Vanillas eigene `diamond_block.png`, pixelidentisch, komplett
 aufgehellt — "viel heller" als das Original, wie gewuenscht. Rezept: 9x
 `myaddon:frost_shard` im 3x3-Vollmuster, wie bei Vanillas eigenem
 Diamantblock. Siehe `packs/behavior_pack/recipes/frost_block.json`.
+
+Lässt sich auch wieder zurueckcraften: 1x `myaddon:frost_block` (formlos)
+ergibt 9x `myaddon:frost_shard` — wie bei Vanillas Diamantblock/Diamant.
+Siehe `packs/behavior_pack/recipes/frost_shard_from_block.json`.
 
 ### Frostschwert im Detail
 

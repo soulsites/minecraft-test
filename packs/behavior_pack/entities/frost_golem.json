@@ -40,6 +40,19 @@
         "avoid_damage_blocks": true
       },
       "minecraft:movement.basic": {},
+      "minecraft:interact": {
+        "interactions": [
+          {
+            "on_interact": { "event": "myaddon:calm" },
+            "items": ["myaddon:frost_shard"],
+            "use_item": false,
+            "swing": true,
+            "particle_on_start": { "particle_type": "minecraft:snowflake_particle" },
+            "play_sounds": ["random.levelup"],
+            "interact_text": "action.interact.feed"
+          }
+        ]
+      },
       "minecraft:behavior.float": { "priority": 0 },
       "minecraft:behavior.melee_attack": { "priority": 2, "track_target": true },
       "minecraft:behavior.nearest_attackable_target": {

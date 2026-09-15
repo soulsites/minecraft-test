@@ -1,0 +1,10 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": { "identifier": "myaddon:frost_shard_from_block" },
+    "tags": ["crafting_table"],
+    "ingredients": [{ "item": "myaddon:frost_block" }],
+    "unlock": { "context": "AlwaysUnlocked" },
+    "result": { "item": "myaddon:frost_shard", "count": 9 }
+  }
+}
