@@ -30,6 +30,10 @@ in `tools/gen-textures.mjs`) umgefaerbt. Deshalb wird `frost_golem.png`
 nicht mehr von `npm run textures` erzeugt — sie ist eine statische Datei
 wie `warden_hammer.png`/`warden_ingot.png`.
 
+Spawnei genauso: Vanillas eigene `spawn_egg_copper_golem.png`,
+pixelidentisch, per Helligkeit auf dieselbe Eis-Blau-Palette umgefaerbt —
+statt der vorher frei gewaehlten Hex-Farben (`base_color`/`overlay_color`).
+
 - **Spawn**: nur noch in Schneebiomen (`has_biome_tag == "frozen"`, wie
   Polarbaer/Stray in Vanilla — nicht das breitere `"cold"`, das z. B. auch
   Taiga einschliesst), nicht in Ozean-Varianten. Siehe
@@ -70,16 +74,23 @@ wie `warden_hammer.png`/`warden_ingot.png`.
   Bedrocks deklaratives Ziel-Filtersystem nur globalen Entity-Zustand
   abfragen kann (Scoreboard, Familie, Health, ...), keine "dieser eine
   Golem kennt genau diesen einen Spieler"-Beziehung.
-  **Aktueller Stand:** Der Ziel-Filter von `frost_golem.json` prueft dieses
-  Scoreboard noch **nicht** — ein `"test": "score"`-Filtereintrag dort hat
-  in einer fruehreren Version offenbar den kompletten Behavior Pack zum
-  Absturz gebracht (Schallbogen, Hammer-Menue, Frostschwert, sogar das
-  simple Warden-Barren-Rezept funktionierten danach nicht mehr) und wurde
-  wieder entfernt, bis eine sicher verifizierte Filter-Syntax dafuer
-  gefunden ist. Fuettern/Bauen setzt den Score also weiterhin, aber Golems
-  greifen den Spieler trotzdem weiter an, bis das nachgereicht ist. Siehe
-  `FrostGolemManager.onPlayerInteractWithEntity` und
-  `FrostGolemManager.onPlayerPlaceBlock`.
+  Der Ziel-Filter in `frost_golem.json` prueft dieses Scoreboard jetzt auch
+  tatsaechlich (`"test": "score", "operator": "<", "value": 1`) — nach dem
+  Total-Ausfall in v1.0.45–v1.0.47 (siehe "Bekannte Probleme") stellte sich
+  heraus, dass die eigentliche Ursache eine Registrierungsreihenfolge im
+  Skript war, nicht dieser Filter; er wurde deshalb jetzt guten Gewissens
+  wieder scharf geschaltet. Siehe `FrostGolemManager.onPlayerInteractWithEntity`
+  und `FrostGolemManager.onPlayerPlaceBlock`.
+  **Nicht umgesetzt:** ein natives "Geben"-Interaktions-Label (ueber
+  `minecraft:interact`) und ein sichtbar in der Hand gehaltener Splitter.
+  Fuer Letzteres gibt es kein belastbares Vorbild — der echte Kupfergolem
+  haelt seine Blume nicht in der Hand, sondern traegt sie ueber eine
+  komplett separate, fest gebackene zweite Geometrie auf dem Kopf
+  (`geometry.copper_golem.flower`); ein generisches "haelt ein beliebiges
+  Item in der Hand" gibt es fuer eigene Mobs so nicht nachweisbar. Bewusst
+  nicht riskiert, kurz nach dem letzten Ausfall durch unverifizierte
+  Bedrock-Schemata — auf Wunsch bauen wir das als naechstes einzeln und
+  vorsichtig getestet nach.
 
 ### Frostblock
 

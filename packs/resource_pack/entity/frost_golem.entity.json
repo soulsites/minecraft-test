@@ -19,7 +19,7 @@
           { "attack": "query.property('myaddon:attacking')" }
         ]
       },
-      "spawn_egg": { "base_color": "#B9E6F2", "overlay_color": "#2E6B8A" }
+      "spawn_egg": { "texture": "spawn_egg_frost_golem" }
     }
   }
 }

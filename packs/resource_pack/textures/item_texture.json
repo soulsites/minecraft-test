@@ -31,6 +31,9 @@
     },
     "warden_hammer": {
       "textures": "textures/items/warden_hammer"
+    },
+    "spawn_egg_frost_golem": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_frost_golem"
     }
   }
 }
