@@ -339,20 +339,26 @@ statische Dateien, nicht mehr Teil von `npm run textures`.
   Addon-Ursache. Das Hammer-Menue ist seitdem wieder eingebaut. Falls
   irgendein Feature wieder Lag verursacht, hier nachschauen und ggf.
   wieder testweise entfernen.
-- **Kompletter Pack-Ausfall** (v1.0.45): nach dem Hinzufuegen von
-  `myaddon:frost_block` funktionierte praktisch nichts mehr — Schallbogen,
-  Hammer-Menue, Frostschwert, sogar das reine (skriptunabhaengige)
-  Warden-Barren-Rezept. Nur der Frost-Golem lief scheinbar weiter (vermutlich
-  ein bereits vor dem Update in der Welt vorhandenes Exemplar, nicht neu
-  darueber geladenes Verhalten). Das ist typisch dafuer, dass Bedrock den
-  **gesamten** Behavior Pack ablehnt, wenn nur eine einzelne Datei ein
-  ungueltiges Schema hat — nicht nur diese eine Datei. Verdaechtigt und
-  zurueckgebaut: `"minecraft:destructible_by_explosion": false` (Boolean
-  statt Objekt) in den Frost-Erz-Dateien, und ein `"test": "score"`-Eintrag
-  im Ziel-Filter von `frost_golem.json` — beides unverifizierte Bedrock-
-  Schemata, fuer die keine echten Vanilla-Beispiele auffindbar waren. Nach
-  dem Zuruecksetzen sollte wieder alles funktionieren; falls nicht, sind es
-  vermutlich doch nicht diese beiden Stellen gewesen.
+- **Kompletter Skript-Ausfall** (v1.0.45–v1.0.47): nach dem Hinzufuegen der
+  Frost-Golem-Vertrauens-Mechanik funktionierte praktisch jede
+  skriptgetriebene Funktion nicht mehr — Schallbogen-Effekt, Hammer-Menue,
+  Frostschwert-Effekt. Items/Bloecke/Rezepte selbst waren nicht betroffen
+  (kein Warnsymbol beim Pack in den Welteinstellungen — der Pack **laedt**
+  einwandfrei, nur das Skript darin lief nicht). Ursache war eine
+  Registrierungsreihenfolge-Falle in `src/main.ts`: `FrostGolemManager`
+  wird zuerst registriert, und `FrostGolemManager.register()` rief ganz am
+  Anfang `world.scoreboard.addObjective()` auf — eine weltverändernde
+  API, die aufgerufen zu frueh (synchron beim Skript-Laden, bevor die Welt
+  fertig geladen ist) einen Fehler wirft. JavaScript bricht bei einem Fehler
+  die gesamte Funktion ab, und da alle anderen `.register()`-Aufrufe
+  (Schallbogen, Frostschwert, Hammer-Menue) danach in derselben Funktion
+  standen, liefen die nie. Behoben:
+  - `ensureTrustObjective()` laeuft jetzt per `system.run()` verzoegert
+    (erster Tick statt Skript-Ladezeit).
+  - `src/main.ts` faengt jetzt jeden `.register()`-Aufruf einzeln per
+    try/catch ab (`Addon.registerSafely`) — ein Fehler in einem Manager
+    kann nie wieder alle anderen mit sich reissen, sondern deaktiviert nur
+    noch das eine betroffene Feature (mit Fehlermeldung im Content Log).
 
 ## Projektstruktur
 

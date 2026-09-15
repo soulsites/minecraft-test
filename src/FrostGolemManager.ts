@@ -30,7 +30,13 @@ export class FrostGolemManager {
   private readonly enraged = new Set<string>();
 
   public register(): void {
-    this.ensureTrustObjective();
+    // Mutating world state (like the scoreboard) at script-load time, before
+    // the world has actually finished loading, can throw - and since this
+    // was the first .register() called in main.ts, that exception used to
+    // abort every registration after it too (sonic bow, frost sword, hammer
+    // menu), not just this one. system.run() defers it to the first tick
+    // once the world is definitely ready.
+    system.run(() => this.ensureTrustObjective());
 
     world.afterEvents.entityHurt.subscribe(this.onEntityHurt, {
       entityTypes: [Identifiers.frostGolem],
